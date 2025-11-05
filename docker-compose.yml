@@ -1,15 +1,17 @@
 services:
   backend:
-    build: .
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: rifle-backend
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - ./backend/.env
     depends_on:
       - db
     volumes:
-      - .:/app
+      - ./backend/src:/app
       - /app/node_modules
     command: npm run dev
 
