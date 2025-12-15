@@ -57,6 +57,10 @@ export interface Event {
   capacity: number;
   remaining: number;
   imageUrl: string;
+  organizer?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface CreateEventRequest {
@@ -85,6 +89,12 @@ export interface Ticket {
   eventId: string;
   status: TicketStatus;
   qrCode: string; // base64 or url
+  event?: Event;
+  validatedAt?: string;
+}
+
+export interface TicketValidateRequest {
+  ticketId: string;
 }
 
 export interface CheckoutResponse {
@@ -95,6 +105,7 @@ export interface ValidateTicketResponse {
   ticketId: string;
   valid: boolean;
 }
+
 
 // ============ DASHBOARD ============
 
