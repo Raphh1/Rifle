@@ -53,6 +53,14 @@ export const updateEvent = async (req, res) => {
     const { id } = req.params;
     const { title, description, date, location, price, capacity, imageUrl } = req.body;
 
+    // Vérification des droits : Organisateur de l'événement ou Admin
+    const existingEvent = await prisma.event.findUnique({ where: { id } });
+    if (!existingEvent) return res.status(404).json({ error: "Événement introuvable" });
+
+    if (existingEvent.organizerId !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: "Action non autorisée" });
+    }
+
     const event = await prisma.event.update({
       where: { id },
       data: { title, description, date, location, price, capacity, imageUrl },
@@ -66,7 +74,17 @@ export const updateEvent = async (req, res) => {
 
 export const deleteEvent = async (req, res) => {
   try {
-    await prisma.event.delete({ where: { id: req.params.id } });
+    const { id } = req.params;
+
+    // Vérification des droits : Organisateur de l'événement ou Admin
+    const existingEvent = await prisma.event.findUnique({ where: { id } });
+    if (!existingEvent) return res.status(404).json({ error: "Événement introuvable" });
+
+    if (existingEvent.organizerId !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: "Action non autorisée" });
+    }
+
+    await prisma.event.delete({ where: { id } });
     res.json({ message: "Événement supprimé" });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });

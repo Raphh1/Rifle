@@ -7,7 +7,7 @@
 
 import express from "express";
 import { authenticate } from "../middleware/auth.js";
-import { getMyTickets, buyTicket } from "../controllers/ticketController.js";
+import { getMyTickets, buyTicket, validateTicket } from "../controllers/ticketController.js";
 
 const router = express.Router();
 
@@ -34,5 +34,30 @@ router.get("/", authenticate, getMyTickets);
  *         description: Ticket acheté avec succès
  */
 router.post("/", authenticate, buyTicket);
+
+/**
+ * @swagger
+ * /tickets/validate:
+ *   post:
+ *     summary: Valider un ticket (Organisateur/Admin)
+ *     tags: [Tickets]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               qrCode:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Ticket validé
+ *       400:
+ *         description: Déjà validé ou invalide
+ *       403:
+ *         description: Non autorisé
+ */
+router.post("/validate", authenticate, validateTicket);
 
 export default router;

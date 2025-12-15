@@ -30,19 +30,20 @@
   },
   "homepage": "https://github.com/Raphh1/Rifle#readme",
   "dependencies": {
-  "bcryptjs": "^2.4.3",
-  "cors": "^2.8.5",
-  "dotenv": "^17.2.3",
-  "express": "^5.1.0",
-  "jsonwebtoken": "^9.0.2",
-  "swagger-jsdoc": "^6.2.8",
-  "swagger-ui-express": "^5.0.1",
-  "@prisma/client": "6.0.1"
-},
-"devDependencies": {
-  "eslint": "^9.39.1",
-  "nodemon": "^3.1.10",
-  "prettier": "^3.6.2",
-  "prisma": "6.0.1"
-}
+    "@prisma/client": "6.0.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "prisma": "6.0.1"
+  }
 }

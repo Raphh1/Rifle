@@ -115,7 +115,7 @@ router.get("/:id", getEventById);
  *       401:
  *         description: Non autorisé
  */
-router.post("/", authenticate, authorize("organizer", "admin"), createEvent);
+router.post("/", authenticate, createEvent);
 
 /**
  * @swagger
@@ -142,7 +142,7 @@ router.post("/", authenticate, authorize("organizer", "admin"), createEvent);
  *       404:
  *         description: Événement introuvable
  */
-router.put("/:id", authenticate, authorize("organizer", "admin"), updateEvent);
+router.put("/:id", authenticate, updateEvent);
 
 /**
  * @swagger
@@ -163,6 +163,6 @@ router.put("/:id", authenticate, authorize("organizer", "admin"), updateEvent);
  *       404:
  *         description: Événement introuvable
  */
-router.delete("/:id", authenticate, authorize("organizer", "admin"), deleteEvent);
+router.delete("/:id", authenticate, deleteEvent);
 
 export default router;
