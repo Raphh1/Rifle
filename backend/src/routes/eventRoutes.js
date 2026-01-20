@@ -99,7 +99,7 @@ router.get("/:id", getEventById);
  * @swagger
  * /events:
  *   post:
- *     summary: Crée un nouvel événement (organisateur ou admin)
+ *     summary: Crée un nouvel événement (Organisateur uniquement)
  *     tags: [Events]
  *     security:
  *       - bearerAuth: []
@@ -112,8 +112,16 @@ router.get("/:id", getEventById);
  *     responses:
  *       201:
  *         description: Événement créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Données manquantes ou invalides
  *       401:
- *         description: Non autorisé
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (Organisateur requis)
  */
 router.post("/", authenticate, createEvent);
 
@@ -123,6 +131,8 @@ router.post("/", authenticate, createEvent);
  *   put:
  *     summary: Met à jour un événement existant
  *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -139,6 +149,14 @@ router.post("/", authenticate, createEvent);
  *     responses:
  *       200:
  *         description: Événement mis à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (Seul le créateur peut modifier)
  *       404:
  *         description: Événement introuvable
  */
@@ -150,6 +168,8 @@ router.put("/:id", authenticate, updateEvent);
  *   delete:
  *     summary: Supprime un événement
  *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -159,7 +179,11 @@ router.put("/:id", authenticate, updateEvent);
  *         description: ID de l'événement à supprimer
  *     responses:
  *       200:
- *         description: Événement supprimé
+ *         description: Événement supprimé avec succès
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (Seul le créateur peut supprimer)
  *       404:
  *         description: Événement introuvable
  */

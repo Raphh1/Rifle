@@ -17,18 +17,44 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: user@example.com
  *               password:
  *                 type: string
+ *                 minLength: 6
+ *                 example: securePassword123
  *               name:
  *                 type: string
+ *                 example: Jean Dupont
+ *               role:
+ *                 type: string
+ *                 enum: [user, organizer]
+ *                 default: user
  *     responses:
  *       201:
  *         description: Utilisateur créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Utilisateur créé avec succès
+ *                 token:
+ *                   type: string
+ *                   description: JWT token
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Champs manquants
+ *         description: Données invalides ou email déjà utilisé
  */
 
 /**
@@ -43,16 +69,35 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: user@example.com
  *               password:
  *                 type: string
+ *                 example: securePassword123
  *     responses:
  *       200:
  *         description: Connexion réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Connexion réussie
+ *                 token:
+ *                   type: string
+ *                   description: JWT Bearer token
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
  *       401:
- *         description: Identifiants invalides
+ *         description: Identifiants invalides (email ou mot de passe incorrect)
  */
 
 import express from "express";
