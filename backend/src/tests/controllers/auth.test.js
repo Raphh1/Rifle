@@ -4,6 +4,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 // 1. Mock Prisma BEFORE importing app
+// Mock generated client to prevent crash if not generated
+jest.unstable_mockModule('../../generated/prisma/index.js', () => ({
+  PrismaClient: class {
+    constructor() {
+      return {};
+    }
+  }
+}));
+
 jest.unstable_mockModule('../../prisma/prismaClient.js', () => ({
   default: {
     user: {

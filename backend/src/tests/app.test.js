@@ -2,6 +2,14 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 
 // Mock Prisma to avoid import errors with generated client
+jest.unstable_mockModule('../generated/prisma/index.js', () => ({
+  PrismaClient: class {
+    constructor() {
+      return { $disconnect: jest.fn() };
+    }
+  }
+}));
+
 jest.unstable_mockModule('../prisma/prismaClient.js', () => ({
   default: {
     $disconnect: jest.fn(),
