@@ -23,6 +23,10 @@ jobs:
       working-directory: ./backend
       run: npm ci
 
+    - name: Generate Prisma Client
+      working-directory: ./backend
+      run: npx prisma generate --schema=src/prisma/schema.prisma
+
     - name: Run Tests
       working-directory: ./backend
       env:
