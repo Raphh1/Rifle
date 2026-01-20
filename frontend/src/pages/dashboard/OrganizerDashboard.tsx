@@ -1,5 +1,5 @@
 import { useOrganizerDashboard } from "../../api/queries";
-import "./dashboard.css";
+import "../dashboard.css";
 
 export function OrganizerDashboard() {
   const {

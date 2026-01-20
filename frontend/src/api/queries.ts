@@ -7,8 +7,6 @@ import type {
   CreateEventRequest,
   TicketValidateRequest,
   ValidateTicketResponse,
-  ApiResponse,
-  PaginationInfo,
 } from "../types/api";
 import { api } from "./axiosClient";
 
@@ -18,10 +16,9 @@ export const useEvents = (page = 1, limit = 10) => {
   return useQuery({
     queryKey: ["events", page, limit],
     queryFn: async () => {
-      const response = await api.get<
-        ApiResponse<{ data: Event[]; pagination: PaginationInfo }>
-      >("/events", { params: { page, limit } });
-      return response.data.data;
+      // Backend returns Event[] directly
+      const response = await api.get<Event[]>("/events", { params: { page, limit } });
+      return response.data;
     },
   });
 };
@@ -30,11 +27,9 @@ export const useEventDetail = (eventId: string) => {
   return useQuery({
     queryKey: ["events", eventId],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<Event>>(`/events/${eventId}`);
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to fetch event");
-      }
-      return response.data.data;
+      // Backend returns Event directly
+      const response = await api.get<Event>(`/events/${eventId}`);
+      return response.data;
     },
     enabled: !!eventId,
   });
@@ -44,14 +39,12 @@ export const useCreateEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (eventData: CreateEventRequest) => {
-      const response = await api.post<ApiResponse<Event>>(
+      // Backend returns Event directly
+      const response = await api.post<Event>(
         "/events",
         eventData
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to create event");
-      }
-      return response.data.data;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
@@ -65,11 +58,9 @@ export const useUserTickets = () => {
   return useQuery({
     queryKey: ["tickets"],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<Ticket[]>>("/tickets");
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to fetch tickets");
-      }
-      return response.data.data;
+      // Backend returns Ticket[] directly
+      const response = await api.get<Ticket[]>("/tickets");
+      return response.data;
     },
   });
 };
@@ -78,13 +69,11 @@ export const useTicketDetail = (ticketId: string) => {
   return useQuery({
     queryKey: ["tickets", ticketId],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<Ticket>>(
+      // Backend returns Ticket directly
+      const response = await api.get<Ticket>(
         `/tickets/${ticketId}`
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to fetch ticket");
-      }
-      return response.data.data;
+      return response.data;
     },
     enabled: !!ticketId,
   });
@@ -94,14 +83,11 @@ export const useValidateTicket = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: TicketValidateRequest) => {
-      const response = await api.post<ApiResponse<ValidateTicketResponse>>(
-        `/tickets/${data.ticketId}/validate`,
-        {}
+      const response = await api.post<ValidateTicketResponse>(
+        `/tickets/validate`,
+        { qrCode: data.qrCode }
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to validate ticket");
-      }
-      return response.data.data;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
@@ -113,14 +99,12 @@ export const useBuyTicket = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (eventId: string) => {
-      const response = await api.post<ApiResponse<{ checkoutUrl: string }>>(
+      // Backend returns { message, ticket }
+      const response = await api.post<{ message: string; ticket: Ticket }>(
         `/tickets/buy`,
         { eventId }
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Failed to buy ticket");
-      }
-      return response.data.data;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
@@ -134,15 +118,10 @@ export const useOrganizerDashboard = () => {
   return useQuery({
     queryKey: ["dashboard", "organizer"],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<OrganizerDashboard>>(
+      const response = await api.get<OrganizerDashboard>(
         "/dashboard/organizer"
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(
-          response.data.error || "Failed to fetch organizer dashboard"
-        );
-      }
-      return response.data.data;
+      return response.data;
     },
   });
 };
@@ -151,15 +130,10 @@ export const useAdminDashboard = () => {
   return useQuery({
     queryKey: ["dashboard", "admin"],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<AdminDashboard>>(
+      const response = await api.get<AdminDashboard>(
         "/dashboard/admin"
       );
-      if (!response.data.success || !response.data.data) {
-        throw new Error(
-          response.data.error || "Failed to fetch admin dashboard"
-        );
-      }
-      return response.data.data;
+      return response.data;
     },
   });
 };

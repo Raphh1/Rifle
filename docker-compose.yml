@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./backend/src:/app
+      - ./backend:/app
       - /app/node_modules
     command: npm run dev
 

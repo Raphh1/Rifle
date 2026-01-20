@@ -94,7 +94,7 @@ export interface Ticket {
 }
 
 export interface TicketValidateRequest {
-  ticketId: string;
+  qrCode: string;
 }
 
 export interface CheckoutResponse {

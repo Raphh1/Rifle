@@ -1,6 +1,6 @@
 import { useUserTickets } from "../../api/queries";
 import { Link } from "react-router-dom";
-import "./tickets.css";
+import "../tickets.css";
 
 export function TicketsList() {
   const { data: tickets, isLoading, isError, error } = useUserTickets();

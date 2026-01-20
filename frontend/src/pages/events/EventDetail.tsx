@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEventDetail, useBuyTicket } from "../../api/queries";
-import "./events.css";
+import "../events.css";
 
 export function EventDetail() {
   const { id } = useParams<{ id: string }>();
@@ -21,10 +21,9 @@ export function EventDetail() {
   const handleBuyTicket = async () => {
     try {
       const result = await buyTicketMutation.mutateAsync(event.id);
-      // Rediriger vers le checkout
-      if (result.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
-      }
+      // Simulation: Afficher le message et rediriger vers mes billets
+      alert(result.message);
+      navigate("/tickets");
     } catch (err) {
       console.error("Erreur lors de l'achat du billet:", err);
     }

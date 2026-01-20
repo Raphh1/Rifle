@@ -33,7 +33,7 @@ router.get("/", authenticate, getMyTickets);
  *       201:
  *         description: Ticket acheté avec succès
  */
-router.post("/", authenticate, buyTicket);
+router.post("/buy", authenticate, buyTicket);
 
 /**
  * @swagger

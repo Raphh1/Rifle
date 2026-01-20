@@ -22,11 +22,12 @@ export const authService = {
    */
   register: async (email: string, password: string, name: string): Promise<AuthData> => {
     const payload: RegisterRequest = { email, password, name };
-    const response = await apiClient.post("/auth/register", payload);
-    if (!response.data.success) {
-      throw new Error(response.data.error || "Registration failed");
-    }
-    return response.data.data;
+    const response = await apiClient.post<{ token: string; user: User }>("/auth/register", payload);
+    
+    return {
+      user: response.data.user,
+      accessToken: response.data.token
+    };
   },
 
   /**
@@ -35,11 +36,12 @@ export const authService = {
    */
   login: async (email: string, password: string): Promise<AuthData> => {
     const payload: LoginRequest = { email, password };
-    const response = await apiClient.post("/auth/login", payload);
-    if (!response.data.success) {
-      throw new Error(response.data.error || "Login failed");
-    }
-    return response.data.data;
+    const response = await apiClient.post<{ token: string; user: User }>("/auth/login", payload);
+    
+    return {
+      user: response.data.user,
+      accessToken: response.data.token
+    };
   },
 
   /**

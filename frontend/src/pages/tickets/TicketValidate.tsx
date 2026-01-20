@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTicketDetail, useValidateTicket } from "../../api/queries";
-import "./tickets.css";
+import "../tickets.css";
 
 export function TicketValidate() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +20,7 @@ export function TicketValidate() {
 
   const handleValidate = async () => {
     try {
-      await validateMutation.mutateAsync({ ticketId: ticket.id });
+      await validateMutation.mutateAsync({ qrCode: ticket.qrCode });
       alert("Billet validé avec succès !");
       navigate("/tickets");
     } catch (err) {

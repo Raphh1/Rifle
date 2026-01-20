@@ -3,9 +3,18 @@ import prisma from "../prisma/prismaClient.js";
 export const getAllEvents = async (req, res) => {
   try {
     const events = await prisma.event.findMany({
-      include: { organizer: { select: { name: true, email: true } } },
+      include: { 
+        organizer: { select: { name: true, email: true } },
+        _count: { select: { tickets: true } }
+      },
     });
-    res.json(events);
+
+    const eventsWithRemaining = events.map(event => ({
+      ...event,
+      remaining: event.capacity - event._count.tickets
+    }));
+
+    res.json(eventsWithRemaining);
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }
@@ -15,10 +24,24 @@ export const getEventById = async (req, res) => {
   try {
     const event = await prisma.event.findUnique({
       where: { id: req.params.id },
-      include: { organizer: true, tickets: true },
+      include: { 
+        organizer: true, 
+        tickets: true,
+        _count: {
+          select: { tickets: true }
+        }
+      },
     });
+    
     if (!event) return res.status(404).json({ error: "Événement introuvable" });
-    res.json(event);
+
+    // Calculer les places restantes
+    const eventWithRemaining = {
+      ...event,
+      remaining: event.capacity - event._count.tickets
+    };
+
+    res.json(eventWithRemaining);
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useEvents } from "../../api/queries";
-import "./events.css";
+import { useAuth } from "../../context/AuthContext";
+import "../events.css";
 
 export function EventList() {
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [category, setCategory] = useState<string>("");
   const { data, isLoading, isError, error } = useEvents(page, 10);
@@ -18,15 +20,17 @@ export function EventList() {
     );
   }
 
-  const events = data?.data || [];
+  const events = data || [];
 
   return (
     <div className="events-container">
       <div className="events-header">
         <h1>Événements disponibles</h1>
-        <Link to="/create-event" className="btn-primary">
-          Créer un événement
-        </Link>
+        {user?.role === "organizer" && (
+          <Link to="/create-event" className="btn-primary">
+            Créer un événement
+          </Link>
+        )}
       </div>
 
       {/* Filtrage */}

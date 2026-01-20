@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useCreateEvent } from "../../api/queries";
-import "./events.css";
+import "../events.css";
 
 const createEventSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),

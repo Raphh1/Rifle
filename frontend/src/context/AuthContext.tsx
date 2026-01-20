@@ -5,15 +5,8 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import type { User, AuthData } from "../types/api";
+import type { User } from "../types/api";
 import { api } from "../api/axiosClient";
-
-// Type for API responses
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 interface AuthContextType {
   user: User | null;
@@ -46,16 +39,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await api.post<ApiResponse<AuthData>>("/auth/login", {
+      // Backend returns { token, user } directly
+      const response = await api.post<{ token: string; user: User }>("/auth/login", {
         email,
         password,
       });
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Login failed");
-      }
-
-      const { user: userData, accessToken } = response.data.data;
+      const { user: userData, token: accessToken } = response.data;
+      
       setUser(userData);
       localStorage.setItem("accessToken", accessToken);
       api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
@@ -77,16 +68,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await api.post<ApiResponse<AuthData>>(
+      // Backend returns { token, user } directly
+      const response = await api.post<{ token: string; user: User }>(
         "/auth/register",
         { name, email, password }
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || "Registration failed");
-      }
+      const { user: userData, token: accessToken } = response.data;
 
-      const { user: userData, accessToken } = response.data.data;
       setUser(userData);
       localStorage.setItem("accessToken", accessToken);
       api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;

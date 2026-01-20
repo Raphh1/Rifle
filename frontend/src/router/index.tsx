@@ -8,6 +8,7 @@ import { TicketsList } from "../pages/tickets/TicketsList";
 import { TicketValidate } from "../pages/tickets/TicketValidate";
 import { OrganizerDashboard } from "../pages/dashboard/OrganizerDashboard";
 import { AdminDashboard } from "../pages/dashboard/AdminDashboard";
+import { Unauthorized } from "../pages/Unauthorized";
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { Layout } from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
   {
     element: <LayoutWrapper />,
     children: [
+      {
+        path: "/unauthorized",
+        element: <Unauthorized />,
+      },
       // ============ EVENTS ============
       {
         path: "/events",

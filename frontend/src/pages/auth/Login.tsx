@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { loginSchema, type LoginFormData } from "../../utils/validation";
 import { ZodError } from "zod";
+import "../auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,6 @@ export default function Login() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -29,13 +29,8 @@ export default function Login() {
     setErrors({});
 
     try {
-      // Validate form data
       const validatedData = loginSchema.parse(formData);
-
-      // Call login
       await login(validatedData.email, validatedData.password);
-
-      // Navigate to dashboard on success
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof ZodError) {
@@ -54,74 +49,56 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Connexion</h1>
+        <p className="auth-subtitle">Bon retour parmi nous</p>
 
         {(generalError || authError) && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          <div className="error-text" style={{ textAlign: "center", marginBottom: "1rem" }}>
             {generalError || authError}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                errors.email
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
-              } disabled:bg-gray-100`}
+              className={errors.email ? "input-error" : ""}
+              placeholder="john@example.com"
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
+            {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+          <div className="form-group">
+            <label htmlFor="password">Mot de passe</label>
             <input
+              id="password"
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                errors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
-              } disabled:bg-gray-100`}
+              className={errors.password ? "input-error" : ""}
+              placeholder="••••••••"
             />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-            )}
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            {isLoading ? "Signing in..." : "Sign In"}
+          <button type="submit" className="btn-primary" disabled={isLoading} style={{ marginTop: "1rem" }}>
+            {isLoading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-600">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Register
-          </Link>
-        </p>
+        <div className="auth-footer">
+          Pas encore de compte ? <Link to="/register">S'inscrire</Link>
+        </div>
       </div>
     </div>
   );
