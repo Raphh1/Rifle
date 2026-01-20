@@ -1,0 +1,31 @@
+name: CI Rifle
+
+on:
+  push:
+    branches: [ "main", "master", "backend" ]
+  pull_request:
+    branches: [ "main", "master", "backend" ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: Run Tests
+      working-directory: ./backend
+      env:
+        DATABASE_URL: "postgresql://postgres:password@localhost:5432/rifle_db_test"
+        JWT_SECRET: "test_secret_key"
+      run: npm test
