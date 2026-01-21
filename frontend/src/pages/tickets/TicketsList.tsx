@@ -1,9 +1,24 @@
-import { useUserTickets } from "../../api/queries";
+import { useUserTickets, useTransferTicket } from "../../api/queries";
 import { Link } from "react-router-dom";
 import "../tickets.css";
 
 export function TicketsList() {
   const { data: tickets, isLoading, isError, error } = useUserTickets();
+  const transferMutation = useTransferTicket();
+
+  const handleTransfer = async (ticketId: string) => {
+    const email = window.prompt("Entrez l'email du destinataire :");
+    if (email) {
+      if (!confirm(`Etes-vous sûr de vouloir transférer ce billet à ${email} ?`)) return;
+      
+      try {
+        await transferMutation.mutateAsync({ ticketId, email });
+        alert("Billet transféré avec succès !");
+      } catch (err) {
+        alert("Erreur lors du transfert : " + (err instanceof Error ? err.message : "Inconnue"));
+      }
+    }
+  };
 
   if (isLoading) return <div className="loading">Chargement de vos billets...</div>;
 
@@ -56,12 +71,21 @@ export function TicketsList() {
               </div>
 
               {ticket.status === "paid" && (
-                <Link
-                  to={`/tickets/${ticket.id}/validate`}
-                  className="btn-secondary"
-                >
-                  Valider le billet
-                </Link>
+                <div className="ticket-actions">
+                  <Link
+                    to={`/tickets/${ticket.id}/validate`}
+                    className="btn-secondary"
+                  >
+                    Valider le billet
+                  </Link>
+                  <button 
+                    className="btn-secondary"
+                    onClick={() => handleTransfer(ticket.id)}
+                    style={{ marginLeft: '10px', backgroundColor: '#e74c3c' }}
+                  >
+                    Transférer
+                  </button>
+                </div>
               )}
             </div>
           ))}

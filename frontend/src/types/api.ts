@@ -45,6 +45,17 @@ export interface RefreshTokenResponse {
   accessToken: string;
 }
 
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  last_page: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
 // ============ EVENTS ============
 
 export interface Event {

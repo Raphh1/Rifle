@@ -7,8 +7,10 @@ import "../events.css";
 export function EventList() {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
-  const [category, setCategory] = useState<string>("");
-  const { data, isLoading, isError, error } = useEvents(page, 10);
+  const [search, setSearch] = useState("");
+  // Debounce search manually or via effect if needed, simpler here is passing directly or debounce hook
+  // We will pass search directly for now, improvements can be added later
+  const { data: response, isLoading, isError, error } = useEvents(page, 10, search);
 
   if (isLoading) return <div className="loading">Chargement des événements...</div>;
 
@@ -20,7 +22,8 @@ export function EventList() {
     );
   }
 
-  const events = data || [];
+  const events = response?.data || [];
+  const meta = response?.meta;
 
   return (
     <div className="events-container">
@@ -37,10 +40,10 @@ export function EventList() {
       <div className="events-filter">
         <input
           type="text"
-          placeholder="Filtrer par catégorie..."
-          value={category}
+          placeholder="Rechercher un événement..."
+          value={search}
           onChange={(e) => {
-            setCategory(e.target.value);
+            setSearch(e.target.value);
             setPage(1);
           }}
         />
@@ -69,18 +72,20 @@ export function EventList() {
       </div>
 
       {/* Pagination */}
-      <div className="pagination">
-        <button
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Précédent
-        </button>
-        <span>Page {page}</span>
-        <button onClick={() => setPage((p) => p + 1)} disabled={events.length < 10}>
-          Suivant
-        </button>
-      </div>
+      {meta && (
+        <div className="pagination">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Précédent
+          </button>
+          <span>Page {page} sur {meta.last_page}</span>
+          <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.last_page}>
+            Suivant
+          </button>
+        </div>
+      )}
     </div>
   );
 }

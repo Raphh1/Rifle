@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   Event,
   Ticket,
+  PaginatedResponse,
   OrganizerDashboard,
   AdminDashboard,
   CreateEventRequest,
@@ -12,14 +13,16 @@ import { api } from "./axiosClient";
 
 // ============ EVENTS ============
 
-export const useEvents = (page = 1, limit = 10) => {
+export const useEvents = (page = 1, limit = 10, search = "") => {
   return useQuery({
-    queryKey: ["events", page, limit],
+    queryKey: ["events", page, limit, search],
     queryFn: async () => {
-      // Backend returns Event[] directly
-      const response = await api.get<Event[]>("/events", { params: { page, limit } });
+      const response = await api.get<PaginatedResponse<Event>>("/events", {
+        params: { page, limit, search },
+      });
       return response.data;
     },
+    placeholderData: (previousData) => previousData, // Keep previous data while fetching
   });
 };
 
@@ -104,6 +107,19 @@ export const useBuyTicket = () => {
         `/tickets/buy`,
         { eventId }
       );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
+};
+
+export const useTransferTicket = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ ticketId, email }: { ticketId: string; email: string }) => {
+      const response = await api.post(`/tickets/${ticketId}/transfer`, { email });
       return response.data;
     },
     onSuccess: () => {

@@ -2,20 +2,50 @@ import prisma from "../prisma/prismaClient.js";
 
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await prisma.event.findMany({
-      include: { 
-        organizer: { select: { name: true, email: true } },
-        _count: { select: { tickets: true } }
-      },
-    });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+    
+    const skip = (page - 1) * limit;
+
+    const where = {};
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    const [events, total] = await prisma.$transaction([
+      prisma.event.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { date: 'asc' },
+        include: { 
+          organizer: { select: { name: true, email: true } },
+          _count: { select: { tickets: true } }
+        },
+      }),
+      prisma.event.count({ where })
+    ]);
 
     const eventsWithRemaining = events.map(event => ({
       ...event,
       remaining: event.capacity - event._count.tickets
     }));
 
-    res.json(eventsWithRemaining);
+    res.json({
+      data: eventsWithRemaining,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit)
+      }
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Erreur serveur" });
   }
 };

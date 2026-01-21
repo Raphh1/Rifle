@@ -56,17 +56,45 @@ const router = express.Router();
  * @swagger
  * /events:
  *   get:
- *     summary: Liste tous les événements
+ *     summary: Liste tous les événements (paginé)
  *     tags: [Events]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Numéro de la page
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Nombre d'éléments par page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Terme de recherche (titre, location, description)
  *     responses:
  *       200:
- *         description: Liste des événements existants
+ *         description: Liste des événements avec pagination
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Event'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Event'
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     page:
+ *                       type: integer
+ *                     last_page:
+ *                       type: integer
  */
 router.get("/", getAllEvents);
 

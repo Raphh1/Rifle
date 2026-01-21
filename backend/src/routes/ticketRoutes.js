@@ -7,9 +7,44 @@
 
 import express from "express";
 import { authenticate } from "../middleware/auth.js";
-import { getMyTickets, buyTicket, validateTicket } from "../controllers/ticketController.js";
+import { getMyTickets, buyTicket, validateTicket, transferTicket } from "../controllers/ticketController.js";
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /tickets/{id}/transfer:
+ *   post:
+ *     summary: Transférer un ticket à un autre utilisateur
+ *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID du ticket à transférer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email du destinataire
+ *     responses:
+ *       200:
+ *         description: Ticket transféré avec succès
+ *       404:
+ *         description: Ticket ou destinataire introuvable
+ */
+router.post("/:id/transfer", authenticate, transferTicket);
 
 /**
  * @swagger

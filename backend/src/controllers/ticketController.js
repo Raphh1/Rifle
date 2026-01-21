@@ -93,3 +93,55 @@ export const validateTicket = async (req, res) => {
     res.status(500).json({ error: "Erreur serveur" });
   }
 };
+
+export const transferTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json({ error: "Email du destinataire requis" });
+
+    // 1. Récupérer le ticket
+    const ticket = await prisma.ticket.findUnique({
+      where: { id },
+      include: { event: true, user: true }
+    });
+
+    if (!ticket) return res.status(404).json({ error: "Ticket introuvable" });
+
+    // 2. Vérifier la propriété
+    if (ticket.userId !== req.user.id) {
+      return res.status(403).json({ error: "Ce ticket ne vous appartient pas" });
+    }
+
+    // 3. Vérifier le statut (impossible de transférer un ticket déjà utilisé)
+    if (ticket.status === 'used' || ticket.validatedAt) {
+      return res.status(400).json({ error: "Impossible de transférer un ticket déjà utilisé" });
+    }
+
+    // 4. Trouver le destinataire
+    const recipient = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!recipient) return res.status(404).json({ error: "Utilisateur destinataire introuvable" });
+
+    if (recipient.id === req.user.id) {
+      return res.status(400).json({ error: "Vous possédez déjà ce ticket" });
+    }
+
+    // 5. Effectuer le transfert
+    const transferredTicket = await prisma.ticket.update({
+      where: { id },
+      data: {
+        userId: recipient.id
+      }
+    });
+
+    res.json({ message: `Ticket transféré avec succès à ${recipient.name}`, ticket: transferredTicket });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};

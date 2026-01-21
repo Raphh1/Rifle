@@ -2,23 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useCreateEvent } from "../../api/queries";
+import { createEventSchema, type CreateEventFormData } from "../../utils/validation";
 import "../events.css";
-
-const createEventSchema = z.object({
-  title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
-  description: z
-    .string()
-    .min(10, "La description doit contenir au moins 10 caractères"),
-  date: z.string().refine(
-    (date) => new Date(date) > new Date(),
-    "La date doit être dans le futur"
-  ),
-  location: z.string().min(3, "Le lieu doit contenir au moins 3 caractères"),
-  price: z.coerce.number().min(0, "Le prix doit être positif"),
-  capacity: z.coerce.number().min(1, "La capacité doit être au moins 1"),
-});
-
-type CreateEventFormData = z.infer<typeof createEventSchema>;
 
 export function CreateEvent() {
   const navigate = useNavigate();
