@@ -32,7 +32,7 @@ jobs:
       run: npm run lint
 
     - name: Test Frontend
-      run: npm test run -- --passWithNoTests
+      run: npm run test
 
     - name: Build Frontend
       run: npm run build
@@ -51,13 +51,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20
-        # cache: 'npm' # Uncomment if lock file exists
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
 
     - name: Install Backend Dependencies
-      run: npm install # Using install instead of ci because lock file might be missing or out of sync
+      run: npm ci
 
-    # - name: Lint Backend
-    #   run: npm run lint
+    - name: Lint Backend
+      run: npm run lint
 
-    # - name: Test Backend
-    #   run: npm test
+    - name: Test Backend
+      run: npm test

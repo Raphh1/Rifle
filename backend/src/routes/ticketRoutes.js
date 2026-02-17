@@ -52,6 +52,8 @@ router.post("/:id/transfer", authenticate, transferTicket);
  *   get:
  *     summary: Récupère les tickets de l'utilisateur connecté
  *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Liste des tickets
@@ -60,10 +62,24 @@ router.get("/", authenticate, getMyTickets);
 
 /**
  * @swagger
- * /tickets:
+ * /tickets/buy:
  *   post:
  *     summary: Permet d'acheter un ticket
  *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - eventId
+ *             properties:
+ *               eventId:
+ *                 type: string
+ *                 description: ID de l'événement
  *     responses:
  *       201:
  *         description: Ticket acheté avec succès
@@ -76,6 +92,8 @@ router.post("/buy", authenticate, buyTicket);
  *   post:
  *     summary: Valider un ticket (Organisateur/Admin)
  *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
