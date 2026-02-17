@@ -10,7 +10,8 @@
     "migrate": "npx prisma migrate dev --name init --schema=src/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/prisma/schema.prisma",
     "lint": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles"
   },
   "prisma": {
     "seed": "node src/prisma/seed.js",
@@ -45,7 +46,10 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
     "@types/node": "^25.2.3",
+    "babel-jest": "^30.2.0",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
