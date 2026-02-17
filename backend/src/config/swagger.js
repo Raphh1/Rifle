@@ -37,6 +37,7 @@ export function setupSwagger(app) {
         { name: "Events", description: "Gestion des événements" },
         { name: "Tickets", description: "Gestion des tickets" },
         { name: "Users", description: "Gestion des utilisateurs" },
+        { name: "Admin", description: "Administration (réservé aux admins)" },
       ],
     },
     apis: ["./src/routes/*.js"], // Scanne toutes tes routes
