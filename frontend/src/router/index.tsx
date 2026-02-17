@@ -6,6 +6,7 @@ import { EventDetail } from "../pages/events/EventDetail";
 import { CreateEvent } from "../pages/events/CreateEvent";
 import { TicketsList } from "../pages/tickets/TicketsList";
 import { TicketValidate } from "../pages/tickets/TicketValidate";
+import { Scanner } from "../pages/tickets/Scanner";
 import { OrganizerDashboard } from "../pages/dashboard/OrganizerDashboard";
 import { AdminDashboard } from "../pages/dashboard/AdminDashboard";
 import { Unauthorized } from "../pages/Unauthorized";
@@ -91,6 +92,14 @@ export const router = createBrowserRouter([
             requiredRole="organizer"
           />
         ),
+      },
+
+      {
+        path: "/scan",
+        // Protection réactivée. On permet aux Organsateurs ET Admins d'accéder
+        // Attention : ProtectedRoute doit gérer un simple rôle ou un tableau rôles
+        // Si elle ne gère qu'un rôle, on peut créer une route custom ScannerPage qui check manuel
+        element: <ProtectedRoute element={<Scanner />} requiredRole="organizer" />,
       },
 
       // ============ DASHBOARD ============

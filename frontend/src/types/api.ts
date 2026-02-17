@@ -97,10 +97,12 @@ export type TicketStatus = "paid" | "pending" | "used";
 
 export interface Ticket {
   id: string;
+  userId: string;
   eventId: string;
   status: TicketStatus;
   qrCode: string; // base64 or url
   event?: Event;
+  user?: User;
   validatedAt?: string;
 }
 
@@ -110,11 +112,13 @@ export interface TicketValidateRequest {
 
 export interface CheckoutResponse {
   checkoutUrl: string;
+  ticket?: Ticket; // Pour le mode simulation
+  message?: string;
 }
 
 export interface ValidateTicketResponse {
-  ticketId: string;
-  valid: boolean;
+  message: string;
+  ticket: Ticket;
 }
 
 

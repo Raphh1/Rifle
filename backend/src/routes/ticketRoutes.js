@@ -6,7 +6,7 @@
  */
 
 import express from "express";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate, authorize } from "../middleware/auth.js";
 import { getMyTickets, buyTicket, validateTicket, transferTicket } from "../controllers/ticketController.js";
 
 const router = express.Router();
@@ -93,6 +93,6 @@ router.post("/buy", authenticate, buyTicket);
  *       403:
  *         description: Non autorisé
  */
-router.post("/validate", authenticate, validateTicket);
+router.post("/validate", authenticate, authorize("organizer", "admin"), validateTicket);
 
 export default router;

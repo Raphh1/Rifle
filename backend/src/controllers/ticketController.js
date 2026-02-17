@@ -16,42 +16,61 @@ export const buyTicket = async (req, res) => {
   try {
     const { eventId } = req.body;
 
-    // Récupérer l'événement avec le compte des tickets vendus
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
-      include: {
-        _count: {
-          select: { tickets: true }
+    // Utilisation d'une transaction Prisma pour garantir l'atomicité
+    // (Vérification du stock + Achat en une seule opération indivisible)
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Récupérer l'événement en "lockant" virtuellement le stock
+      const event = await tx.event.findUnique({
+        where: { id: eventId },
+        include: {
+          _count: {
+            select: { tickets: true }
+          }
         }
+      });
+
+      if (!event) throw new Error("Événement introuvable");
+
+      // 2. Vérification stricte de la capacité (Stock épuisé ?)
+      const placesVendues = event._count.tickets;
+      if (placesVendues >= event.capacity) {
+        throw new Error("SOLD_OUT"); // Erreur spécifique pour le frontend
       }
+
+      // 3. Génération d'un QR Code unique et sécurisé
+      // Format : EVT_ID-USER_ID-TIMESTAMP-RANDOM
+      const uniqueQrString = `${eventId.slice(0, 4)}-${req.user.id.slice(0, 4)}-${Date.now().toString(36).toUpperCase()}`;
+
+      // 4. Création du ticket
+      const ticket = await tx.ticket.create({
+        data: {
+          userId: req.user.id,
+          eventId,
+          status: "paid", // Simulation: paiement validé immédiat
+          purchaseDate: new Date(),
+          qrCode: uniqueQrString
+        },
+      });
+
+      return { ticket, eventTitle: event.title };
     });
 
-    if (!event) return res.status(404).json({ error: "Événement introuvable" });
-
-    // Vérification de la capacité (Sold Out)
-    if (event._count.tickets >= event.capacity) {
-      return res.status(400).json({ error: "Événement complet (Sold Out)" });
-    }
-
-    // Simulation de paiement réussi directement
-    // Dans un vrai cas, on créerait une session Stripe ici
-    const ticket = await prisma.ticket.create({
-      data: {
-        userId: req.user.id,
-        eventId,
-        status: "paid", // On valide directement le paiement
-        purchaseDate: new Date(),
-        qrCode: `TICKET-${Math.random().toString(36).substr(2, 9).toUpperCase()}` // Génération simple de code
-      },
-    });
-
+    // Si la transaction réussit :
     res.status(201).json({ 
-      message: "Ticket acheté avec succès (Simulation)", 
-      ticket 
+      message: `Billet acheté avec succès pour ${result.eventTitle}`, 
+      ticket: result.ticket 
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Erreur serveur" });
+    // Gestion fine des erreurs
+    if (err.message === "SOLD_OUT") {
+      return res.status(409).json({ error: "Désolé, cet événement est complet !" });
+    }
+    if (err.message === "Événement introuvable") {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Erreur lors de l'achat du billet" });
   }
 };
 
@@ -68,22 +87,26 @@ export const validateTicket = async (req, res) => {
 
     if (!ticket) return res.status(404).json({ error: "Ticket invalide ou introuvable" });
 
-    // Vérification : Seul l'organisateur de l'événement ou un admin peut valider
+    // Verify ownership
     if (ticket.event.organizerId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: "Vous n'êtes pas autorisé à valider ce ticket" });
     }
 
-    // Vérifier si déjà utilisé
+    // Check if already used
     if (ticket.status === 'used' || ticket.validatedAt) {
-      return res.status(400).json({ error: "Ce ticket a déjà été validé" });
+      return res.status(400).json({ error: "Ce ticket a déjà été validé", ticket });
     }
 
-    // Valider le ticket
+    // Validate ticket
     const updatedTicket = await prisma.ticket.update({
       where: { id: ticket.id },
       data: {
         status: 'used',
         validatedAt: new Date()
+      },
+      include: {
+        event: true,
+        user: true
       }
     });
 

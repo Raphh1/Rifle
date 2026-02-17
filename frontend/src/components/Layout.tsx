@@ -35,6 +35,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <Link to="/create-event" className="navbar-link">
                       Créer
                     </Link>
+                    <Link to="/scan" className="navbar-link">
+                      Scan
+                    </Link>
                     <Link to="/dashboard" className="navbar-link">
                       Tableau de bord
                     </Link>

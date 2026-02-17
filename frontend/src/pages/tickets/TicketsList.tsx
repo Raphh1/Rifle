@@ -1,5 +1,6 @@
 import { useUserTickets, useTransferTicket } from "../../api/queries";
 import { Link } from "react-router-dom";
+import QRCode from "react-qr-code";
 import "../tickets.css";
 
 export function TicketsList() {
@@ -57,8 +58,8 @@ export function TicketsList() {
                 </>
               )}
 
-              <div className="ticket-qr">
-                <img src={ticket.qrCode} alt="QR Code billet" />
+              <div className="ticket-qr" style={{ background: 'white', padding: '10px', display: 'inline-block' }}>
+                <QRCode value={ticket.qrCode || "INVALID"} size={128} />
               </div>
 
               <div className="ticket-info">
