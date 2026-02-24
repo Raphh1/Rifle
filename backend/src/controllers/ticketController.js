@@ -168,3 +168,31 @@ export const transferTicket = async (req, res) => {
     res.status(500).json({ error: "Erreur serveur" });
   }
 };
+
+// GET /tickets/:id
+export const getTicketById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const ticket = await prisma.ticket.findUnique({
+      where: { id },
+      include: { event: true, user: true },
+    });
+
+    if (!ticket) return res.status(404).json({ error: "Ticket introuvable" });
+
+    // Autorisation : propriétaire du ticket OR organisateur de l'événement OR admin
+    if (
+      ticket.userId !== req.user.id &&
+      ticket.event?.organizerId !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ error: "Accès refusé" });
+    }
+
+    res.json(ticket);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};

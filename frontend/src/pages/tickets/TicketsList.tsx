@@ -10,23 +10,33 @@ export function TicketsList() {
   const handleTransfer = async (ticketId: string) => {
     const email = window.prompt("Entrez l'email du destinataire :");
     if (email) {
-      if (!confirm(`Etes-vous sûr de vouloir transférer ce billet à ${email} ?`)) return;
-      
+      if (
+        !confirm(`Etes-vous sûr de vouloir transférer ce billet à ${email} ?`)
+      )
+        return;
+
       try {
         await transferMutation.mutateAsync({ ticketId, email });
         alert("Billet transféré avec succès !");
       } catch (err) {
-        alert("Erreur lors du transfert : " + (err instanceof Error ? err.message : "Inconnue"));
+        alert(
+          "Erreur lors du transfert : " +
+            (err instanceof Error ? err.message : "Inconnue"),
+        );
       }
     }
   };
 
-  if (isLoading) return <div className="loading">Chargement de vos billets...</div>;
+  if (isLoading)
+    return <div className="loading">Chargement de vos billets...</div>;
 
   if (isError) {
     return (
       <div className="error">
-        Erreur : {error instanceof Error ? error.message : "Impossible de charger les billets"}
+        Erreur :{" "}
+        {error instanceof Error
+          ? error.message
+          : "Impossible de charger les billets"}
       </div>
     );
   }
@@ -58,7 +68,14 @@ export function TicketsList() {
                 </>
               )}
 
-              <div className="ticket-qr" style={{ background: 'white', padding: '10px', display: 'inline-block' }}>
+              <div
+                className="ticket-qr"
+                style={{
+                  background: "white",
+                  padding: "10px",
+                  display: "inline-block",
+                }}
+              >
                 <QRCode value={ticket.qrCode || "INVALID"} size={128} />
               </div>
 
@@ -79,13 +96,14 @@ export function TicketsList() {
                   >
                     Valider le billet
                   </Link>
-                  <button 
+
+                  <Link
+                    to={`/tickets/${ticket.id}/transfer`}
                     className="btn-secondary"
-                    onClick={() => handleTransfer(ticket.id)}
-                    style={{ marginLeft: '10px', backgroundColor: '#e74c3c' }}
+                    style={{ marginLeft: "10px", backgroundColor: "#e74c3c" }}
                   >
                     Transférer
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>

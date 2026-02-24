@@ -13,6 +13,7 @@ import { Unauthorized } from "../pages/Unauthorized";
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { Layout } from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
+import { TransferTicket } from "../pages/tickets/TransferTicket";
 
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
@@ -81,8 +82,8 @@ export const router = createBrowserRouter([
 
       // ============ TICKETS ============
       {
-        path: "/tickets",
-        element: <ProtectedRoute element={<TicketsList />} />,
+        path: "/tickets/:id/transfer",
+        element: <ProtectedRoute element={<TransferTicket />} />
       },
       {
         path: "/tickets/:id/validate",
@@ -93,7 +94,10 @@ export const router = createBrowserRouter([
           />
         ),
       },
-
+       {
+        path: "/tickets",
+        element: <ProtectedRoute element={<TicketsList />} />,
+      },
       {
         path: "/scan",
         // Protection réactivée. On permet aux Organsateurs ET Admins d'accéder
