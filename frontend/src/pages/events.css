@@ -1,9 +1,7 @@
-/* Events Pages Styles */
-.events-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md);
-}
+/* events.css removed — styles migrated to Tailwind classes in EventList.tsx */
+
+/* If you need to keep any utility overrides, add them below. Prefer Tailwind utilities instead. */
+
 
 .events-header {
   display: flex;

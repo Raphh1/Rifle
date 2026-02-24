@@ -2,7 +2,7 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import { router } from "./router";
-import "./App.css";
+// App-level style kept in `src/index.css` (Tailwind). Removed legacy App.css import.
 
 const queryClient = new QueryClient();
 

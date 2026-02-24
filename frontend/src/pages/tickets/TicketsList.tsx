@@ -1,7 +1,42 @@
 import { useUserTickets, useTransferTicket } from "../../api/queries";
 import { Link } from "react-router-dom";
 import QRCode from "react-qr-code";
-import "../tickets.css";
+
+function formatDate(date: string | Date) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles =
+    status === "paid"
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : status === "pending"
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : status === "used"
+      ? "bg-slate-100 text-slate-600 border-slate-200"
+      : "bg-red-50 text-red-700 border-red-200";
+
+  const label =
+    status === "paid"
+      ? "Payé"
+      : status === "pending"
+      ? "En attente"
+      : status === "used"
+      ? "Utilisé"
+      : status;
+
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styles}`}>
+      {label}
+    </span>
+  );
+}
 
 export function TicketsList() {
   const { data: tickets, isLoading, isError, error } = useUserTickets();
@@ -9,101 +44,116 @@ export function TicketsList() {
 
   const handleTransfer = async (ticketId: string) => {
     const email = window.prompt("Entrez l'email du destinataire :");
-    if (email) {
-      if (
-        !confirm(`Etes-vous sûr de vouloir transférer ce billet à ${email} ?`)
-      )
-        return;
+    if (!email) return;
 
-      try {
-        await transferMutation.mutateAsync({ ticketId, email });
-        alert("Billet transféré avec succès !");
-      } catch (err) {
-        alert(
-          "Erreur lors du transfert : " +
-            (err instanceof Error ? err.message : "Inconnue"),
-        );
-      }
+    if (!confirm(`Êtes-vous sûr de vouloir transférer ce billet à ${email} ?`)) return;
+
+    try {
+      await transferMutation.mutateAsync({ ticketId, email });
+      alert("Billet transféré avec succès !");
+    } catch (err) {
+      alert("Erreur lors du transfert : " + (err instanceof Error ? err.message : "Inconnue"));
     }
   };
 
-  if (isLoading)
-    return <div className="loading">Chargement de vos billets...</div>;
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+        Chargement de vos billets…
+      </div>
+    );
+  }
 
   if (isError) {
     return (
-      <div className="error">
-        Erreur :{" "}
-        {error instanceof Error
-          ? error.message
-          : "Impossible de charger les billets"}
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700 shadow-sm">
+        Erreur : {error instanceof Error ? error.message : "Impossible de charger les billets"}
       </div>
     );
   }
 
   return (
-    <div className="tickets-container">
-      <div className="tickets-header">
-        <h1>Mes billets</h1>
+    <div>
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          Mes billets
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Retrouvez tous vos billets achetés
+        </p>
       </div>
 
       {!tickets || tickets.length === 0 ? (
-        <div className="no-tickets">
-          <p>Vous n'avez pas encore acheté de billets.</p>
-          <Link to="/events" className="btn-primary">
+        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+          <p className="text-slate-700 font-semibold">Vous n&apos;avez pas encore acheté de billets.</p>
+
+          <Link
+            to="/events"
+            className="mt-4 inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-white font-semibold
+                       shadow-sm hover:bg-indigo-700 transition"
+          >
             Découvrir les événements
           </Link>
         </div>
       ) : (
-        <div className="tickets-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {tickets.map((ticket) => (
-            <div key={ticket.id} className="ticket-card">
+            <div
+              key={ticket.id}
+              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col
+                         transition hover:shadow-md"
+            >
               {ticket.event && (
-                <>
-                  <h3>{ticket.event.title}</h3>
-                  <p className="event-date">
-                    {new Date(ticket.event.date).toLocaleDateString()}
-                  </p>
-                  <p className="event-location">{ticket.event.location}</p>
-                </>
+                <div className="mb-4">
+                  <h3 className="text-base font-bold text-slate-900">
+                    {ticket.event.title}
+                  </h3>
+
+                  <div className="mt-1 text-sm text-slate-500">
+                    {formatDate(ticket.event.date)}
+                  </div>
+
+                  <div className="text-sm text-slate-600">
+                    {ticket.event.location}
+                  </div>
+                </div>
               )}
 
-              <div
-                className="ticket-qr"
-                style={{
-                  background: "white",
-                  padding: "10px",
-                  display: "inline-block",
-                }}
-              >
-                <QRCode value={ticket.qrCode || "INVALID"} size={128} />
+              {/* QR */}
+              <div className="flex justify-center my-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-3">
+                  <QRCode value={ticket.qrCode || "INVALID"} size={120} />
+                </div>
               </div>
 
-              <div className="ticket-info">
-                <p className="ticket-id">Billet #{ticket.id.slice(0, 8)}</p>
-                <p className={`ticket-status status-${ticket.status}`}>
-                  {ticket.status === "paid" && "Payé"}
-                  {ticket.status === "pending" && "En attente"}
-                  {ticket.status === "used" && "Utilisé"}
-                </p>
+              {/* Footer */}
+              <div className="flex items-center justify-between mt-3">
+                <div className="text-xs text-slate-500">
+                  Billet #{ticket.id.slice(0, 8)}
+                </div>
+
+                <StatusBadge status={ticket.status} />
               </div>
 
+              {/* Actions */}
               {ticket.status === "paid" && (
-                <div className="ticket-actions">
+                <div className="mt-4 flex gap-2">
                   <Link
                     to={`/tickets/${ticket.id}/validate`}
-                    className="btn-secondary"
+                    className="flex-1 text-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold
+                               text-slate-700 shadow-sm hover:bg-slate-50 transition"
                   >
-                    Valider le billet
+                    Valider
                   </Link>
 
-                  <Link
-                    to={`/tickets/${ticket.id}/transfer`}
-                    className="btn-secondary"
-                    style={{ marginLeft: "10px", backgroundColor: "#e74c3c" }}
+                  <button
+                    onClick={() => handleTransfer(ticket.id)}
+                    className="flex-1 rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm
+                               hover:bg-red-600 transition"
                   >
                     Transférer
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>

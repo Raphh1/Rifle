@@ -1,91 +1,157 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useEvents } from "../../api/queries";
 import { useAuth } from "../../context/AuthContext";
-import "../events.css";
+import { EventCard, type EventCardModel } from "./EventCard";
 
 export function EventList() {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  // Debounce search manually or via effect if needed, simpler here is passing directly or debounce hook
-  // We will pass search directly for now, improvements can be added later
   const { data: response, isLoading, isError, error } = useEvents(page, 10, search);
 
-  if (isLoading) return <div className="loading">Chargement des événements...</div>;
+  const events = useMemo(() => {
+    const raw = response?.data ?? [];
+    // petit "cast" safe : ton backend renvoie déjà les champs utilisés
+    return raw as unknown as EventCardModel[];
+  }, [response?.data]);
 
-  if (isError) {
-    return (
-      <div className="error">
-        Erreur : {error instanceof Error ? error.message : "Unknown error"}
-      </div>
-    );
-  }
-
-  const events = response?.data || [];
   const meta = response?.meta;
 
   return (
-    <div className="events-container">
-      <div className="events-header">
-        <h1>Événements disponibles</h1>
-        {user?.role === "organizer" && (
-          <Link to="/create-event" className="btn-primary">
-            Créer un événement
-          </Link>
-        )}
-      </div>
-
-      {/* Filtrage */}
-      <div className="events-filter">
-        <input
-          type="text"
-          placeholder="Rechercher un événement..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
-      </div>
-
-      {/* Grille d'événements */}
-      <div className="events-grid">
-        {events.map((event) => (
-          <Link key={event.id} to={`/events/${event.id}`} className="event-card">
-            {event.imageUrl && (
-              <img src={event.imageUrl} alt={event.title} />
-            )}
-            <div className="event-content">
-              <h3>{event.title}</h3>
-              <p className="event-date">
-                {new Date(event.date).toLocaleDateString()}
-              </p>
-              <p className="event-location">{event.location}</p>
-              <p className="event-price">{event.price}€</p>
-              <p className="event-capacity">
-                Places disponibles : {event.remaining}/{event.capacity}
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header / Toolbar */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                Événements disponibles
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">
+                Trouvez des événements près de chez vous
               </p>
             </div>
-          </Link>
-        ))}
-      </div>
 
-      {/* Pagination */}
-      {meta && (
-        <div className="pagination">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-          >
-            Précédent
-          </button>
-          <span>Page {page} sur {meta.last_page}</span>
-          <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.last_page}>
-            Suivant
-          </button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+              {/* Search */}
+              <div className="relative w-full sm:w-80">
+                <svg
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                  />
+                </svg>
+
+                <input
+                  type="text"
+                  aria-label="Rechercher un événement"
+                  placeholder="Rechercher un événement…"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white shadow-sm
+                             focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400"
+                />
+              </div>
+
+              {/* Create button */}
+              {user?.role === "organizer" && (
+                <Link
+                  to="/create-event"
+                  className="inline-flex justify-center items-center rounded-xl bg-indigo-600 px-4 py-2.5
+                             text-white font-semibold shadow-sm hover:bg-indigo-700 transition
+                             focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+                >
+                  Créer
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Content */}
+        <div className="mt-6">
+          {isLoading && (
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center text-slate-600">
+              Chargement des événements…
+            </div>
+          )}
+
+          {isError && (
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center text-red-600">
+              Erreur : {error instanceof Error ? error.message : "Unknown error"}
+            </div>
+          )}
+
+          {!isLoading && !isError && (
+            <>
+              {events.length === 0 ? (
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center">
+                  <p className="text-slate-700 text-lg font-semibold">Aucun événement trouvé.</p>
+                  <p className="text-slate-500 mt-2">Essaie une autre recherche.</p>
+
+                  {user?.role === "organizer" && (
+                    <div className="mt-6">
+                      <Link
+                        to="/create-event"
+                        className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5
+                                   text-white font-semibold shadow-sm hover:bg-emerald-700 transition"
+                      >
+                        Créer ton premier événement
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {events.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {meta && meta.last_page && meta.last_page > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="rounded-xl bg-white border border-slate-200 px-4 py-2 font-semibold text-slate-700
+                               shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition"
+                  >
+                    Précédent
+                  </button>
+
+                  <div className="text-sm text-slate-600">
+                    Page <span className="font-semibold text-slate-900">{page}</span> sur{" "}
+                    <span className="font-semibold text-slate-900">{meta.last_page}</span>
+                  </div>
+
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page >= meta.last_page}
+                    className="rounded-xl bg-white border border-slate-200 px-4 py-2 font-semibold text-slate-700
+                               shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition"
+                  >
+                    Suivant
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
