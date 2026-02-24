@@ -1,8 +1,9 @@
+import React from "react";
+import { Box, Container, Flex, Heading, Spacer, Button, Text } from "@chakra-ui/react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
-import "./Layout.css";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -12,74 +13,75 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="layout">
-      <nav className="navbar">
-        <div className="navbar-container">
-          <Link to="/" className="navbar-logo">
-            Rifle
-          </Link>
+    <Box as="header" bg="white" boxShadow="sm">
+      <Container maxW="container.xl" py={3}>
+        <Flex align="center">
+          <RouterLink to="/" style={{ textDecoration: "none" }}>
+            <Heading size="md">Rifle</Heading>
+          </RouterLink>
+          <Spacer />
 
-          <div className="navbar-menu">
-            <Link to="/events" className="navbar-link">
-              Événements
-            </Link>
+          <Flex gap={4} align="center">
+            <RouterLink to="/events">
+              <Text color="gray.700">Events</Text>
+            </RouterLink>
 
-            {user && (
-              <>
-                <Link to="/tickets" className="navbar-link">
-                  Mes billets
-                </Link>
+            <RouterLink to="/tickets">
+              <Text color="gray.700">My Tickets</Text>
+            </RouterLink>
 
-                {user.role === "organizer" && (
-                  <>
-                    <Link to="/create-event" className="navbar-link">
-                      Créer
-                    </Link>
-                    <Link to="/scan" className="navbar-link">
-                      Scan
-                    </Link>
-                    <Link to="/dashboard" className="navbar-link">
-                      Tableau de bord
-                    </Link>
-                  </>
-                )}
-
-                {user.role === "admin" && (
-                  <Link to="/dashboard" className="navbar-link">
-                    Admin
-                  </Link>
-                )}
-              </>
-            )}
-          </div>
-
-          <div className="navbar-auth">
             {user ? (
               <>
-                <span className="navbar-user">{user.name}</span>
-                <button onClick={handleLogout} className="btn-logout">
-                  Déconnexion
-                </button>
+                {user.role === "organizer" && (
+                  <RouterLink to="/create-event">
+                    <Text color="gray.700">Create</Text>
+                  </RouterLink>
+                )}
+
+                <Button size="sm" onClick={handleLogout} ml={3} variant="outline">
+                  Logout
+                </Button>
+                <Text ml={3} fontSize="sm" color="gray.600">
+                  {user.name}
+                </Text>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-link">
-                  Connexion
-                </Link>
-                <Link to="/register" className="btn-link btn-link-primary">
-                  S'inscrire
-                </Link>
+                <RouterLink to="/login">
+                  <Text color="gray.700">Login</Text>
+                </RouterLink>
+                <Button onClick={() => navigate('/register')} size="sm" ml={3} colorScheme="brand">
+                  Sign up
+                </Button>
               </>
             )}
-          </div>
-        </div>
-      </nav>
-
-      <main className="main-content">{children}</main>
-
-      <footer className="footer">
-        <p>&copy; 2025 Rifle. Tous droits réservés.</p>
-      </footer>
-    </div>
+          </Flex>
+        </Flex>
+      </Container>
+    </Box>
   );
-}
+};
+
+const Footer: React.FC = () => (
+  <Box as="footer" bg="white" mt={8} py={4} boxShadow="inner">
+    <Container maxW="container.xl">
+      <Flex justify="center" fontSize="sm" color="gray.600">
+        © {new Date().getFullYear()} Rifle. Tous droits réservés.
+      </Flex>
+    </Container>
+  </Box>
+);
+
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <Box minH="100vh" bg="gray.50">
+      <Header />
+      <Container maxW="container.xl" py={6}>
+        {children}
+      </Container>
+      <Footer />
+    </Box>
+  );
+};
+
+export default Layout;

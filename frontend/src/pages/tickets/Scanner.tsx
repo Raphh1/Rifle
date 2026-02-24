@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-// @ts-ignore
+// @ts-expect-error
 import QrScanner from "react-qr-scanner";
 import { useValidateTicket } from "../../api/queries";
 import "./Scanner.css";
@@ -97,7 +97,7 @@ export function Scanner() {
                 top: 0,
                 left: 0
               }}
-              // @ts-ignore
+              // @ts-expect-error
               videoStyle={{
                 height: '100%',
                 width: '100%',

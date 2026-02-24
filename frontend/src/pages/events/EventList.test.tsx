@@ -21,7 +21,7 @@ vi.mock('../../context/AuthContext', async (importOriginal) => {
 
 describe('EventList', () => {
     it('renders loading state', () => {
-        // @ts-ignore
+        // @ts-expect-error
         queries.useEvents.mockReturnValue({ isLoading: true });
         render(<EventList />);
         expect(screen.getByText(/chargement des événements/i)).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('EventList', () => {
             }
         ];
 
-        // @ts-ignore
+        // @ts-expect-error
         queries.useEvents.mockReturnValue({
             isLoading: false,
             data: {
