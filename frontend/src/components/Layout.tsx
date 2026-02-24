@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Container, Flex, Heading, Spacer, Button, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Header: React.FC = () => {
@@ -13,74 +12,47 @@ const Header: React.FC = () => {
   };
 
   return (
-    <Box as="header" bg="white" boxShadow="sm">
-      <Container maxW="container.xl" py={3}>
-        <Flex align="center">
-          <RouterLink to="/" style={{ textDecoration: "none" }}>
-            <Heading size="md">Rifle</Heading>
-          </RouterLink>
-          <Spacer />
+    <header className="bg-white shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center">
+        <Link to="/" className="text-lg font-semibold text-gray-800">Rifle</Link>
+        <div className="flex-1" />
+        <nav className="flex items-center gap-4">
+          <Link to="/events" className="text-gray-700 hover:text-gray-900">Events</Link>
+          <Link to="/tickets" className="text-gray-700 hover:text-gray-900">My Tickets</Link>
 
-          <Flex gap={4} align="center">
-            <RouterLink to="/events">
-              <Text color="gray.700">Events</Text>
-            </RouterLink>
-
-            <RouterLink to="/tickets">
-              <Text color="gray.700">My Tickets</Text>
-            </RouterLink>
-
-            {user ? (
-              <>
-                {user.role === "organizer" && (
-                  <RouterLink to="/create-event">
-                    <Text color="gray.700">Create</Text>
-                  </RouterLink>
-                )}
-
-                <Button size="sm" onClick={handleLogout} ml={3} variant="outline">
-                  Logout
-                </Button>
-                <Text ml={3} fontSize="sm" color="gray.600">
-                  {user.name}
-                </Text>
-              </>
-            ) : (
-              <>
-                <RouterLink to="/login">
-                  <Text color="gray.700">Login</Text>
-                </RouterLink>
-                <Button onClick={() => navigate('/register')} size="sm" ml={3} colorScheme="brand">
-                  Sign up
-                </Button>
-              </>
-            )}
-          </Flex>
-        </Flex>
-      </Container>
-    </Box>
+          {user ? (
+            <>
+              {user.role === "organizer" && (
+                <Link to="/create-event" className="text-gray-700 hover:text-gray-900">Create</Link>
+              )}
+              <button onClick={handleLogout} className="ml-2 px-3 py-1 border rounded text-sm">Logout</button>
+              <span className="ml-2 text-sm text-gray-600">{user.name}</span>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="text-gray-700 hover:text-gray-900">Login</Link>
+              <Link to="/register" className="ml-2 px-3 py-1 bg-blue-600 text-white rounded text-sm">Sign up</Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
   );
 };
 
 const Footer: React.FC = () => (
-  <Box as="footer" bg="white" mt={8} py={4} boxShadow="inner">
-    <Container maxW="container.xl">
-      <Flex justify="center" fontSize="sm" color="gray.600">
-        © {new Date().getFullYear()} Rifle. Tous droits réservés.
-      </Flex>
-    </Container>
-  </Box>
+  <footer className="bg-white mt-8 py-4">
+    <div className="max-w-6xl mx-auto px-4 text-center text-sm text-gray-600">© {new Date().getFullYear()} Rifle. Tous droits réservés.</div>
+  </footer>
 );
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <Box minH="100vh" bg="gray.50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <Container maxW="container.xl" py={6}>
-        {children}
-      </Container>
+      <main className="max-w-6xl mx-auto px-4 py-6 flex-1 w-full">{children}</main>
       <Footer />
-    </Box>
+    </div>
   );
 };
 

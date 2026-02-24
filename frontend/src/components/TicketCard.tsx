@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Image, Heading, Text, Badge, Button, Flex } from "@chakra-ui/react";
 
 interface TicketCardProps {
   title: string;
@@ -12,27 +11,23 @@ interface TicketCardProps {
 
 const TicketCard: React.FC<TicketCardProps> = ({ title, date, venue, status, onView, onTransfer }) => {
   return (
-    <Box bg="white" boxShadow="sm" borderRadius="md" overflow="hidden">
-      <Image src="/placeholder-event.jpg" alt={title} objectFit="cover" w="100%" h="160px" />
-      <Box p={4}>
-        <Heading size="sm">{title}</Heading>
-        {date && <Text fontSize="sm" color="gray.600">{date}</Text>}
-        {venue && <Text fontSize="sm" color="gray.600">{venue}</Text>}
-
-        <Flex mt={3} gap={3} align="center">
+    <div className="bg-white shadow rounded overflow-hidden">
+      <img src="/placeholder-event.jpg" alt={title} className="w-full h-40 object-cover" />
+      <div className="p-4">
+        <h3 className="text-sm font-semibold">{title}</h3>
+        {date && <p className="text-sm text-gray-500">{date}</p>}
+        {venue && <p className="text-sm text-gray-500">{venue}</p>}
+        <div className="mt-3 flex gap-3 items-center">
           {status && (
-            <Badge colorScheme={status === "VALID" ? "green" : "yellow"}>{status}</Badge>
+            <span className={`px-2 py-1 text-xs rounded ${status === 'VALID' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              {status}
+            </span>
           )}
-
-          <Button size="sm" onClick={onView} variant="outline">
-            View
-          </Button>
-          <Button size="sm" onClick={onTransfer} colorScheme="brand">
-            Transfer
-          </Button>
-        </Flex>
-      </Box>
-    </Box>
+          <button onClick={onView} className="border px-2 py-1 text-sm rounded">View</button>
+          <button onClick={onTransfer} className="bg-blue-600 text-white px-2 py-1 rounded">Transfer</button>
+        </div>
+      </div>
+    </div>
   );
 };
 
