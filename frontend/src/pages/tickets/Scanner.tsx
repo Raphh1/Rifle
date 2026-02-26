@@ -1,9 +1,12 @@
 import { useState, useRef } from "react";
-// @ts-ignore
 import QrScanner from "react-qr-scanner";
 import { useValidateTicket } from "../../api/queries";
 
 type Notification = { type: "success" | "error"; title: string; text: string };
+
+// Typage minimal (no-any) pour ce qu'on utilise réellement
+type ScanResult = { text?: string } | string | null | undefined;
+type ScannerError = unknown;
 
 export function Scanner() {
   const [manualCode, setManualCode] = useState("");
@@ -16,9 +19,14 @@ export function Scanner() {
   // Ref pour éviter les doubles scans instantanés
   const processingRef = useRef(false);
 
-  const handleScan = (data: any) => {
-    // react-qr-scanner renvoie parfois { text } ou string suivant versions
-    const text = data?.text ?? data;
+  const handleScan = (data: ScanResult) => {
+    const text =
+      typeof data === "string"
+        ? data
+        : data && typeof data === "object" && "text" in data
+        ? data.text
+        : undefined;
+
     if (!text) return;
 
     if (!processingRef.current && isScanning) {
@@ -28,7 +36,7 @@ export function Scanner() {
     }
   };
 
-  const handleError = (err: any) => {
+  const handleError = (err: ScannerError) => {
     console.error("Erreur caméra:", err);
     setCameraError("Impossible d'accéder à la caméra. Vérifiez les permissions navigateur.");
   };
@@ -47,12 +55,17 @@ export function Scanner() {
         title: "Billet validé",
         text: `Événement: ${eventTitle}\nClient: ${userEmail}`,
       });
-    } catch (err: any) {
-      const errorMsg = err?.response?.data?.error || "Billet invalide ou erreur serveur";
+    } catch (err: unknown) {
+      const errorMsg =
+        err && typeof err === "object" && "response" in err
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (err as { response?: { data?: { error?: unknown } } }).response?.data?.error
+          : undefined;
+
       setNotification({
         type: "error",
         title: "Scan refusé",
-        text: String(errorMsg),
+        text: String(errorMsg ?? "Billet invalide ou erreur serveur"),
       });
     } finally {
       processingRef.current = false;
@@ -147,7 +160,7 @@ export function Scanner() {
                   top: 0,
                   left: 0,
                 }}
-                // @ts-ignore
+                // @ts-expect-error -- prop non typée correctement par la lib
                 videoStyle={{ height: "100%", width: "100%", objectFit: "cover" }}
                 constraints={{ audio: false, video: { facingMode: "environment" } }}
               />
@@ -160,16 +173,13 @@ export function Scanner() {
               {/* Scan window */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div className="relative h-72 w-72 max-w-[80vw] max-h-[80vw]">
-                  {/* Outer border */}
                   <div className="absolute inset-0 rounded-3xl border border-white/25 bg-white/5 backdrop-blur-[1px]" />
 
-                  {/* Corner accents */}
                   <Corner className="left-0 top-0" />
                   <Corner className="right-0 top-0 rotate-90" />
                   <Corner className="right-0 bottom-0 rotate-180" />
                   <Corner className="left-0 bottom-0 -rotate-90" />
 
-                  {/* Scan line (subtle) */}
                   <div className="absolute left-6 right-6 top-1/2 h-px bg-emerald-300/70 shadow-[0_0_20px_rgba(110,231,183,0.6)]" />
                 </div>
 
@@ -210,7 +220,11 @@ export function Scanner() {
 
                   <div className="mt-3 flex items-center justify-between text-xs text-white/60">
                     <div>
-                      {validateMutation.isPending ? "Validation en cours…" : isScanning ? "Prêt à scanner" : "Scan en pause"}
+                      {validateMutation.isPending
+                        ? "Validation en cours…"
+                        : isScanning
+                        ? "Prêt à scanner"
+                        : "Scan en pause"}
                     </div>
                     <button
                       onClick={resetScanner}

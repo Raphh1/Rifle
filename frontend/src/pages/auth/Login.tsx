@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { loginSchema, type LoginFormData } from "../../utils/validation";
 import { ZodError } from "zod";
 

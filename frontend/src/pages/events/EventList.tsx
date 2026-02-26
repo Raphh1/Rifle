@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useEvents } from "../../api/queries";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { EventCard, type EventCardModel } from "./EventCard";
 
 export function EventList() {

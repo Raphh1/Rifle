@@ -5,7 +5,11 @@ import { useTicketDetail, useTransferTicket } from "../../api/queries";
 function formatDate(date: string | Date) {
   const d = typeof date === "string" ? new Date(date) : date;
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return d.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -13,22 +17,24 @@ function StatusBadge({ status }: { status: string }) {
     status === "paid"
       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
       : status === "pending"
-      ? "bg-amber-50 text-amber-700 border-amber-200"
-      : status === "used"
-      ? "bg-slate-100 text-slate-600 border-slate-200"
-      : "bg-red-50 text-red-700 border-red-200";
+        ? "bg-amber-50 text-amber-700 border-amber-200"
+        : status === "used"
+          ? "bg-slate-100 text-slate-600 border-slate-200"
+          : "bg-red-50 text-red-700 border-red-200";
 
   const label =
     status === "paid"
       ? "Payé"
       : status === "pending"
-      ? "En attente"
-      : status === "used"
-      ? "Utilisé"
-      : status;
+        ? "En attente"
+        : status === "used"
+          ? "Utilisé"
+          : status;
 
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styles}`}>
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styles}`}
+    >
       {label}
     </span>
   );
@@ -73,11 +79,21 @@ export function TransferTicket() {
 
     setSubmitting(true);
     try {
-      await transferMutation.mutateAsync({ ticketId: id!, email: email.trim() });
+      await transferMutation.mutateAsync({
+        ticketId: id!,
+        email: email.trim(),
+      });
       navigate("/tickets");
-    } catch (err: any) {
-      const msg = err?.response?.data?.error || err?.message || "Erreur lors du transfert";
-      setFormError(String(msg));
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { error?: unknown } } }).response
+              ?.data?.error
+          : err && typeof err === "object" && "message" in err
+            ? (err as { message?: unknown }).message
+            : undefined;
+
+      setFormError(String(msg ?? "Erreur lors du transfert"));
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +117,9 @@ export function TransferTicket() {
           <div className="min-w-0">
             {ticket.event ? (
               <>
-                <div className="text-lg font-bold text-slate-900 truncate">{ticket.event.title}</div>
+                <div className="text-lg font-bold text-slate-900 truncate">
+                  {ticket.event.title}
+                </div>
                 <div className="mt-1 text-sm text-slate-600">
                   {formatDate(ticket.event.date)} • {ticket.event.location}
                 </div>
@@ -116,8 +134,12 @@ export function TransferTicket() {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-xs font-semibold text-slate-500">ID du billet</div>
-            <div className="mt-1 font-mono text-sm text-slate-900 break-all">{ticket.id}</div>
+            <div className="text-xs font-semibold text-slate-500">
+              ID du billet
+            </div>
+            <div className="mt-1 font-mono text-sm text-slate-900 break-all">
+              {ticket.id}
+            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -138,7 +160,10 @@ export function TransferTicket() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
           <div>
-            <label className="block text-sm font-semibold text-slate-900" htmlFor="email">
+            <label
+              className="block text-sm font-semibold text-slate-900"
+              htmlFor="email"
+            >
               Email du destinataire
             </label>
             <div className="relative mt-1">
@@ -149,7 +174,12 @@ export function TransferTicket() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m8 0l-8 0m12-7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V7a2 2 0 00-2-2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 12H8m8 0l-8 0m12-7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V7a2 2 0 00-2-2z"
+                />
               </svg>
 
               <input
@@ -164,7 +194,8 @@ export function TransferTicket() {
               />
             </div>
             <p className="mt-1 text-xs text-slate-500">
-              Assure-toi que le destinataire a un compte (ou pourra en créer un).
+              Assure-toi que le destinataire a un compte (ou pourra en créer
+              un).
             </p>
           </div>
 
@@ -184,7 +215,9 @@ export function TransferTicket() {
               className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm
                          hover:bg-indigo-700 transition disabled:opacity-50"
             >
-              {submitting || transferMutation.isPending ? "Transfert..." : "Transférer le billet"}
+              {submitting || transferMutation.isPending
+                ? "Transfert..."
+                : "Transférer le billet"}
             </button>
           </div>
         </form>

@@ -2,8 +2,8 @@ declare module 'react-qr-scanner' {
   import * as React from 'react';
 
   export interface QrScannerProps {
-    onError: (error: any) => void;
-    onScan: (data: any) => void;
+    onError: (error: unknown) => void;
+    onScan: (data: unknown) => void;
     style?: React.CSSProperties;
     constraints?: MediaStreamConstraints;
     delay?: number;

@@ -84,7 +84,7 @@ export interface CreateEventRequest {
   imageUrl: string;
 }
 
-export interface UpdateEventRequest extends CreateEventRequest {}
+export type UpdateEventRequest = CreateEventRequest;
 
 export interface EventListResponse {
   data: Event[];

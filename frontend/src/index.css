@@ -202,3 +202,7 @@ h3 { font-size: var(--font-size-xl); }
   font-size: var(--font-size-lg);
   color: var(--color-text-muted);
 }
+
+.test-tailwind {
+  @apply bg-red-500 text-white p-10;
+}

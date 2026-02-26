@@ -9,11 +9,8 @@ interface UseFormState<T> {
 
 /**
  * Hook pour gérer l'état d'un formulaire
- * @param initialValues - Valeurs initiales du formulaire
- * @param onSubmit - Fonction appelée à la soumission
- * @returns state, setFieldValue, handleSubmit
  */
-export const useForm = <T extends Record<string, any>>(
+export const useForm = <T extends Record<string, unknown>>(
   initialValues: T,
   onSubmit: (values: T) => Promise<void>
 ) => {
@@ -24,7 +21,8 @@ export const useForm = <T extends Record<string, any>>(
     isSubmitted: false,
   });
 
-  const setFieldValue = (field: keyof T, value: any) => {
+  // ✅ value typé intelligemment
+  const setFieldValue = <K extends keyof T>(field: K, value: T[K]) => {
     setState((prev) => ({
       ...prev,
       data: {
@@ -33,7 +31,7 @@ export const useForm = <T extends Record<string, any>>(
       },
       errors: {
         ...prev.errors,
-        [field]: "", // Effacer l'erreur du champ
+        [field as string]: "",
       },
     }));
   };
@@ -52,6 +50,7 @@ export const useForm = <T extends Record<string, any>>(
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Une erreur est survenue";
+
       setState((prev) => ({
         ...prev,
         errors: {

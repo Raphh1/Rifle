@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   useEffect,
   type ReactNode,
@@ -8,7 +7,7 @@ import {
 import type { User } from "../types/api";
 import { api } from "../api/axiosClient";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -18,41 +17,40 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize auth from localStorage
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      // Optionally verify token with /auth/me
     }
+
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     setError(null);
     setIsLoading(true);
+
     try {
-      // Backend returns { token, user } directly
       const response = await api.post<{ token: string; user: User }>("/auth/login", {
         email,
         password,
       });
 
       const { user: userData, token: accessToken } = response.data;
-      
+
       setUser(userData);
       localStorage.setItem("accessToken", accessToken);
       api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "An error occurred";
+      const message = err instanceof Error ? err.message : "Login failed";
       setError(message);
       throw err;
     } finally {
@@ -60,15 +58,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (
-    name: string,
-    email: string,
-    password: string
-  ) => {
+  const register = async (name: string, email: string, password: string) => {
     setError(null);
     setIsLoading(true);
+
     try {
-      // Backend returns { token, user } directly
       const response = await api.post<{ token: string; user: User }>(
         "/auth/register",
         { name, email, password }
@@ -80,8 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("accessToken", accessToken);
       api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "An error occurred";
+      const message = err instanceof Error ? err.message : "Register failed";
       setError(message);
       throw err;
     } finally {
@@ -111,12 +104,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
 };
