@@ -4,10 +4,6 @@ import { useValidateTicket } from "../../api/queries";
 
 type Notification = { type: "success" | "error"; title: string; text: string };
 
-// Typage minimal (no-any) pour ce qu'on utilise réellement
-type ScanResult = { text?: string } | string | null | undefined;
-type ScannerError = unknown;
-
 export function Scanner() {
   const [manualCode, setManualCode] = useState("");
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -19,10 +15,9 @@ export function Scanner() {
   // Ref pour éviter les doubles scans instantanés
   const processingRef = useRef(false);
 
-  function handleScan(data: unknown) {
+  const handleScan = (data: unknown) => {
     if (!data) return;
 
-    // react-qr-scanner peut renvoyer string OU object selon version
     const text =
       typeof data === "string"
         ? data
@@ -37,12 +32,14 @@ export function Scanner() {
       setIsScanning(false);
       validateTicket(String(text));
     }
-  }
+  };
 
-  function handleError(err: unknown) {
-    console.error("Camera error:", err);
-    setCameraError("Impossible d'accéder à la caméra.");
-  }
+  const handleError = (err: unknown) => {
+    console.error("Erreur caméra:", err);
+    setCameraError(
+      "Impossible d'accéder à la caméra. Vérifiez les permissions navigateur.",
+    );
+  };
 
   const validateTicket = async (code: string) => {
     setNotification(null);
@@ -59,17 +56,18 @@ export function Scanner() {
         text: `Événement: ${eventTitle}\nClient: ${userEmail}`,
       });
     } catch (err: unknown) {
-      const errorMsg =
+      const msg =
         err && typeof err === "object" && "response" in err
-          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (err as { response?: { data?: { error?: unknown } } }).response
+          ? (err as { response?: { data?: { error?: unknown } } }).response
               ?.data?.error
-          : undefined;
+          : err && typeof err === "object" && "message" in err
+            ? (err as { message?: unknown }).message
+            : undefined;
 
       setNotification({
         type: "error",
         title: "Scan refusé",
-        text: String(errorMsg ?? "Billet invalide ou erreur serveur"),
+        text: String(msg ?? "Billet invalide ou erreur serveur"),
       });
     } finally {
       processingRef.current = false;
