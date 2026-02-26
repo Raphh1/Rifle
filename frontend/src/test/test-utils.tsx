@@ -1,34 +1,30 @@
-import React, { type ReactElement } from 'react';
-import { render, type RenderOptions } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '../context/AuthContext';
+/* eslint-disable react-refresh/only-export-components */
+import React, { type ReactElement } from "react";
+import { render as rtlRender, type RenderOptions } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "../context/AuthContext";
 
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
     },
-  },
-});
+  });
 
-const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+function AllTheProviders({ children }: { children: React.ReactNode }) {
   const queryClient = createTestQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-            <AuthProvider>
-                {children}
-            </AuthProvider>
-        </BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>{children}</AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
-};
+}
 
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, { wrapper: AllTheProviders, ...options });
+export function render(ui: ReactElement, options?: Omit<RenderOptions, "wrapper">) {
+  return rtlRender(ui, { wrapper: AllTheProviders, ...options });
+}
 
-export * from '@testing-library/react';
-export { customRender as render };
+export { screen, within, fireEvent } from "@testing-library/react";

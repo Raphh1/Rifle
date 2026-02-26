@@ -1,23 +1,7 @@
-import {
-  createContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { User } from "../types/api";
 import { api } from "../api/axiosClient";
-
-export interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext, type AuthContextType } from "./AuthContextValue";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,24 +10,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login: AuthContextType["login"] = async (email, password) => {
     setError(null);
     setIsLoading(true);
-
     try {
-      const response = await api.post<{ token: string; user: User }>("/auth/login", {
-        email,
-        password,
-      });
-
+      const response = await api.post<{ token: string; user: User }>("/auth/login", { email, password });
       const { user: userData, token: accessToken } = response.data;
 
       setUser(userData);
@@ -58,16 +35,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register: AuthContextType["register"] = async (name, email, password) => {
     setError(null);
     setIsLoading(true);
-
     try {
-      const response = await api.post<{ token: string; user: User }>(
-        "/auth/register",
-        { name, email, password }
-      );
-
+      const response = await api.post<{ token: string; user: User }>("/auth/register", { name, email, password });
       const { user: userData, token: accessToken } = response.data;
 
       setUser(userData);
@@ -82,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
+  const logout: AuthContextType["logout"] = () => {
     setUser(null);
     setError(null);
     localStorage.removeItem("accessToken");

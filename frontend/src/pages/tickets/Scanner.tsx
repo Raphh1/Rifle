@@ -19,27 +19,30 @@ export function Scanner() {
   // Ref pour éviter les doubles scans instantanés
   const processingRef = useRef(false);
 
-  const handleScan = (data: ScanResult) => {
+  function handleScan(data: unknown) {
+    if (!data) return;
+
+    // react-qr-scanner peut renvoyer string OU object selon version
     const text =
       typeof data === "string"
         ? data
-        : data && typeof data === "object" && "text" in data
-        ? data.text
-        : undefined;
+        : typeof data === "object" && data !== null && "text" in data
+          ? (data as { text?: unknown }).text
+          : undefined;
 
     if (!text) return;
 
     if (!processingRef.current && isScanning) {
       processingRef.current = true;
-      setIsScanning(false); // pause immédiatement
+      setIsScanning(false);
       validateTicket(String(text));
     }
-  };
+  }
 
-  const handleError = (err: ScannerError) => {
-    console.error("Erreur caméra:", err);
-    setCameraError("Impossible d'accéder à la caméra. Vérifiez les permissions navigateur.");
-  };
+  function handleError(err: unknown) {
+    console.error("Camera error:", err);
+    setCameraError("Impossible d'accéder à la caméra.");
+  }
 
   const validateTicket = async (code: string) => {
     setNotification(null);
@@ -59,7 +62,8 @@ export function Scanner() {
       const errorMsg =
         err && typeof err === "object" && "response" in err
           ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (err as { response?: { data?: { error?: unknown } } }).response?.data?.error
+            (err as { response?: { data?: { error?: unknown } } }).response
+              ?.data?.error
           : undefined;
 
       setNotification({
@@ -100,9 +104,15 @@ export function Scanner() {
       <div className="absolute left-0 right-0 top-0 z-20 border-b border-white/10 bg-black/40 backdrop-blur">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-white">Scanner de billets</div>
+            <div className="text-sm font-semibold text-white">
+              Scanner de billets
+            </div>
             <div className="text-xs text-white/70">
-              {cameraError ? "Caméra indisponible" : isScanning ? "Scan actif" : "Scan en pause"}
+              {cameraError
+                ? "Caméra indisponible"
+                : isScanning
+                  ? "Scan actif"
+                  : "Scan en pause"}
             </div>
           </div>
 
@@ -133,7 +143,9 @@ export function Scanner() {
         {cameraError ? (
           <div className="h-full flex items-center justify-center px-6">
             <div className="w-full max-w-md rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-              <div className="text-lg font-bold text-red-200">Erreur caméra</div>
+              <div className="text-lg font-bold text-red-200">
+                Erreur caméra
+              </div>
               <p className="mt-2 text-sm text-white/80">{cameraError}</p>
               <button
                 onClick={() => window.location.reload()}
@@ -160,9 +172,15 @@ export function Scanner() {
                   top: 0,
                   left: 0,
                 }}
-                // @ts-expect-error -- prop non typée correctement par la lib
-                videoStyle={{ height: "100%", width: "100%", objectFit: "cover" }}
-                constraints={{ audio: false, video: { facingMode: "environment" } }}
+                videoStyle={{
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "cover",
+                }}
+                constraints={{
+                  audio: false,
+                  video: { facingMode: "environment" },
+                }}
               />
             </div>
 
@@ -210,7 +228,9 @@ export function Scanner() {
 
                     <button
                       type="submit"
-                      disabled={!manualCode.trim() || validateMutation.isPending}
+                      disabled={
+                        !manualCode.trim() || validateMutation.isPending
+                      }
                       className="self-end rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white
                                  hover:bg-emerald-700 transition disabled:opacity-50"
                     >
@@ -223,8 +243,8 @@ export function Scanner() {
                       {validateMutation.isPending
                         ? "Validation en cours…"
                         : isScanning
-                        ? "Prêt à scanner"
-                        : "Scan en pause"}
+                          ? "Prêt à scanner"
+                          : "Scan en pause"}
                     </div>
                     <button
                       onClick={resetScanner}
@@ -251,16 +271,40 @@ export function Scanner() {
               <div
                 className={[
                   "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0",
-                  notification.type === "success" ? "bg-emerald-50" : "bg-red-50",
+                  notification.type === "success"
+                    ? "bg-emerald-50"
+                    : "bg-red-50",
                 ].join(" ")}
               >
                 {notification.type === "success" ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-emerald-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-red-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 )}
               </div>
@@ -269,7 +313,9 @@ export function Scanner() {
                 <div
                   className={[
                     "text-sm font-extrabold",
-                    notification.type === "success" ? "text-emerald-700" : "text-red-700",
+                    notification.type === "success"
+                      ? "text-emerald-700"
+                      : "text-red-700",
                   ].join(" ")}
                 >
                   {notification.title}
