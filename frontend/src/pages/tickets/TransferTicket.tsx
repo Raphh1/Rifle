@@ -19,7 +19,7 @@ function StatusBadge({ status }: { status: string }) {
       : status === "pending"
         ? "bg-amber-50 text-amber-700 border-amber-200"
         : status === "used"
-          ? "bg-slate-100 text-slate-600 border-slate-200"
+          ? "bg-slate-700 text-white border-slate-700"
           : "bg-red-50 text-red-700 border-red-200";
 
   const label =
@@ -57,7 +57,7 @@ export function TransferTicket() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center text-slate-400 shadow-sm">
         Chargement du billet…
       </div>
     );
@@ -106,12 +106,12 @@ export function TransferTicket() {
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           Transférer le billet
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           Envoie ce billet à un autre utilisateur par email
         </p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+      <div className="rounded-3xl border border-slate-700 bg-slate-800 p-6 sm:p-8 shadow-sm">
         {/* Ticket recap */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -120,7 +120,7 @@ export function TransferTicket() {
                 <div className="text-lg font-bold text-slate-900 truncate">
                   {ticket.event.title}
                 </div>
-                <div className="mt-1 text-sm text-slate-600">
+                <div className="mt-1 text-sm text-slate-400">
                   {formatDate(ticket.event.date)} • {ticket.event.location}
                 </div>
               </>
@@ -133,17 +133,17 @@ export function TransferTicket() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-xs font-semibold text-slate-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+            <div className="text-xs font-semibold text-slate-400">
               ID du billet
             </div>
-            <div className="mt-1 font-mono text-sm text-slate-900 break-all">
+            <div className="mt-1 font-mono text-sm text-white break-all">
               {ticket.id}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-xs font-semibold text-slate-500">Statut</div>
+          <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+            <div className="text-xs font-semibold text-slate-400">Statut</div>
             <div className="mt-2">
               <StatusBadge status={ticket.status} />
             </div>
@@ -189,11 +189,11 @@ export function TransferTicket() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="destinataire@example.com"
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-slate-900 shadow-sm
+                className="w-full rounded-xl border border-slate-700 bg-slate-800 py-2.5 pl-10 pr-3 text-white shadow-sm
                            placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400"
               />
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-400">
               Assure-toi que le destinataire a un compte (ou pourra en créer
               un).
             </p>
@@ -203,8 +203,8 @@ export function TransferTicket() {
             <button
               type="button"
               onClick={() => navigate("/tickets")}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700
-                         shadow-sm hover:bg-slate-50 transition"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white
+                         shadow-sm hover:bg-slate-700 transition"
             >
               Annuler
             </button>

@@ -51,39 +51,39 @@ export default function Register() {
   const bannerError = generalError || authError;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Left marketing panel */}
           <div className="hidden lg:block">
-            <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
-              <div className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700">
+            <div className="rounded-3xl border border-slate-700 bg-slate-800 p-10 shadow-sm">
+              <div className="inline-flex items-center rounded-full bg-indigo-900 px-3 py-1 text-sm font-semibold text-indigo-400">
                 Rifle • Crée ton compte
               </div>
 
-              <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900">
+              <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white">
                 Rejoins Rifle ✨
               </h1>
 
-              <p className="mt-3 text-slate-600 leading-relaxed">
+              <p className="mt-3 text-slate-300 leading-relaxed">
                 Crée ton compte pour acheter des billets, suivre tes événements et accéder au dashboard.
               </p>
 
               <div className="mt-8 grid gap-4">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-sm font-semibold text-slate-900">Simple</div>
-                  <div className="text-sm text-slate-600 mt-1">Inscription en quelques secondes.</div>
+                <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+                  <div className="text-sm font-semibold text-white">Simple</div>
+                  <div className="text-sm text-slate-300 mt-1">Inscription en quelques secondes.</div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-sm font-semibold text-slate-900">Pratique</div>
-                  <div className="text-sm text-slate-600 mt-1">Accès rapide à tes tickets et événements.</div>
+                <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+                  <div className="text-sm font-semibold text-white">Pratique</div>
+                  <div className="text-sm text-slate-300 mt-1">Accès rapide à tes tickets et événements.</div>
                 </div>
               </div>
 
-              <div className="mt-10 text-sm text-slate-500">
+              <div className="mt-10 text-sm text-slate-400">
                 Déjà un compte ?{" "}
-                <Link to="/login" className="font-semibold text-indigo-700 hover:text-indigo-800">
+                <Link to="/login" className="font-semibold text-indigo-400 hover:text-indigo-300">
                   Se connecter
                 </Link>
               </div>
@@ -93,14 +93,14 @@ export default function Register() {
           {/* Right form */}
           <div className="flex justify-center">
             <div className="w-full max-w-md">
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+              <div className="rounded-3xl border border-slate-700 bg-slate-800 p-6 sm:p-8 shadow-sm">
                 <div className="text-center">
-                  <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Créer un compte</h2>
-                  <p className="mt-1 text-sm text-slate-500">Rejoignez la communauté Rifle</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-white">Créer un compte</h2>
+                  <p className="mt-1 text-sm text-slate-400">Rejoignez la communauté Rifle</p>
                 </div>
 
                 {bannerError && (
-                  <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <div className="mt-6 rounded-2xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-400">
                     {bannerError}
                   </div>
                 )}
@@ -108,13 +108,13 @@ export default function Register() {
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900" htmlFor="name">
+                    <label className="block text-sm font-semibold text-white" htmlFor="name">
                       Nom complet
                     </label>
 
                     <div className="relative mt-1">
                       <svg
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"
+                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -138,27 +138,27 @@ export default function Register() {
                         placeholder="John Doe"
                         autoComplete="name"
                         className={[
-                          "w-full rounded-xl border bg-white py-2.5 pl-10 pr-3 text-slate-900 shadow-sm",
-                          "placeholder:text-slate-400",
-                          "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                          "w-full rounded-xl border bg-slate-700 py-2.5 pl-10 pr-3 text-white shadow-sm",
+                          "placeholder:text-slate-500",
+                          "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                           "disabled:opacity-60",
-                          errors.name ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                          errors.name ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                         ].join(" ")}
                       />
                     </div>
 
-                    {errors.name && <div className="mt-1 text-sm text-red-600">{errors.name}</div>}
+                    {errors.name && <div className="mt-1 text-sm text-red-400">{errors.name}</div>}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900" htmlFor="email">
+                    <label className="block text-sm font-semibold text-white" htmlFor="email">
                       Email
                     </label>
 
                     <div className="relative mt-1">
                       <svg
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"
+                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -182,27 +182,27 @@ export default function Register() {
                         placeholder="john@example.com"
                         autoComplete="email"
                         className={[
-                          "w-full rounded-xl border bg-white py-2.5 pl-10 pr-3 text-slate-900 shadow-sm",
-                          "placeholder:text-slate-400",
-                          "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                          "w-full rounded-xl border bg-slate-700 py-2.5 pl-10 pr-3 text-white shadow-sm",
+                          "placeholder:text-slate-500",
+                          "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                           "disabled:opacity-60",
-                          errors.email ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                          errors.email ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                         ].join(" ")}
                       />
                     </div>
 
-                    {errors.email && <div className="mt-1 text-sm text-red-600">{errors.email}</div>}
+                    {errors.email && <div className="mt-1 text-sm text-red-400">{errors.email}</div>}
                   </div>
 
                   {/* Password */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900" htmlFor="password">
+                    <label className="block text-sm font-semibold text-white" htmlFor="password">
                       Mot de passe
                     </label>
 
                     <div className="relative mt-1">
                       <svg
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"
+                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -226,16 +226,16 @@ export default function Register() {
                         placeholder="••••••••"
                         autoComplete="new-password"
                         className={[
-                          "w-full rounded-xl border bg-white py-2.5 pl-10 pr-3 text-slate-900 shadow-sm",
-                          "placeholder:text-slate-400",
-                          "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                          "w-full rounded-xl border bg-slate-700 py-2.5 pl-10 pr-3 text-white shadow-sm",
+                          "placeholder:text-slate-500",
+                          "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                           "disabled:opacity-60",
-                          errors.password ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                          errors.password ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                         ].join(" ")}
                       />
                     </div>
 
-                    {errors.password && <div className="mt-1 text-sm text-red-600">{errors.password}</div>}
+                    {errors.password && <div className="mt-1 text-sm text-red-400">{errors.password}</div>}
                   </div>
 
                   {/* Submit */}
@@ -243,14 +243,14 @@ export default function Register() {
                     type="submit"
                     disabled={isLoading}
                     className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 font-semibold text-white shadow-sm
-                               hover:bg-indigo-700 transition disabled:opacity-60
-                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+                               hover:bg-indigo-500 transition disabled:opacity-60
+                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
                   >
                     {isLoading ? "Création en cours..." : "S'inscrire"}
                   </button>
                 </form>
 
-                <div className="mt-6 text-center text-sm text-slate-600">
+                <div className="mt-6 text-center text-sm text-slate-400">
                   Déjà un compte ?{" "}
                   <Link to="/login" className="font-semibold text-indigo-700 hover:text-indigo-800">
                     Se connecter
@@ -258,7 +258,7 @@ export default function Register() {
                 </div>
 
                 <div className="mt-4 text-center">
-                  <Link to="/" className="text-sm text-slate-500 hover:text-slate-700">
+                  <Link to="/" className="text-sm text-slate-400 hover:text-slate-300">
                     ← Retour à l’accueil
                   </Link>
                 </div>

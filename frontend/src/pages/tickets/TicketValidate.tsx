@@ -16,7 +16,7 @@ function StatusBadge({ status }: { status: string }) {
       : status === "pending"
       ? "bg-amber-50 text-amber-700 border-amber-200"
       : status === "used"
-      ? "bg-slate-100 text-slate-600 border-slate-200"
+      ? "bg-slate-700 text-white border-slate-700"
       : "bg-red-50 text-red-700 border-red-200";
 
   const label =
@@ -48,7 +48,7 @@ export function TicketValidate() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center text-slate-400 shadow-sm">
         Chargement du billet…
       </div>
     );
@@ -79,12 +79,12 @@ export function TicketValidate() {
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           Valider le billet
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           Vérifie les informations puis valide le billet
         </p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+      <div className="rounded-3xl border border-slate-700 bg-slate-800 p-6 sm:p-8 shadow-sm">
         {/* Event infos */}
         {ticket.event && (
           <div className="flex items-start justify-between gap-4">
@@ -92,7 +92,7 @@ export function TicketValidate() {
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
                 {ticket.event.title}
               </h2>
-              <div className="mt-1 text-sm text-slate-600">
+              <div className="mt-1 text-sm text-slate-400">
                 {formatDate(ticket.event.date)} • {ticket.event.location}
               </div>
             </div>
@@ -102,26 +102,26 @@ export function TicketValidate() {
 
         {/* QR */}
         <div className="mt-6 flex justify-center">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-4 shadow-sm">
             <QRCode value={ticket.qrCode || "INVALID"} size={180} />
           </div>
         </div>
 
         {/* Details */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-xs font-semibold text-slate-500">ID du billet</div>
-            <div className="mt-1 font-mono text-sm text-slate-900 break-all">{ticket.id}</div>
+          <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+            <div className="text-xs font-semibold text-slate-400">ID du billet</div>
+            <div className="mt-1 font-mono text-sm text-white break-all">{ticket.id}</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-xs font-semibold text-slate-500">Statut</div>
+          <div className="rounded-2xl border border-slate-700 bg-slate-700 p-4">
+            <div className="text-xs font-semibold text-slate-400">Statut</div>
             <div className="mt-2">
               <StatusBadge status={ticket.status} />
             </div>
 
             {ticket.status !== "paid" && (
-              <div className="mt-2 text-xs text-slate-500">
+              <div className="mt-2 text-xs text-slate-400">
                 Seuls les billets <span className="font-semibold">payés</span> peuvent être validés.
               </div>
             )}
@@ -132,8 +132,8 @@ export function TicketValidate() {
         <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
           <button
             onClick={() => navigate("/tickets")}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700
-                       shadow-sm hover:bg-slate-50 transition"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white
+                       shadow-sm hover:bg-slate-700 transition"
           >
             Retour
           </button>

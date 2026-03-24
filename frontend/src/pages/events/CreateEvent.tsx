@@ -77,31 +77,31 @@ export function CreateEvent() {
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           Créer un événement
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           Renseigne les infos principales : titre, date, lieu, prix et capacité.
         </p>
       </div>
 
       {generalError && (
-        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-6 rounded-2xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-400">
           {generalError}
         </div>
       )}
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-6"
+        className="rounded-3xl border border-slate-700 bg-slate-800 p-6 sm:p-8 shadow-sm space-y-6"
         noValidate
       >
         <div>
-          <div className="text-sm font-bold text-slate-900">Informations</div>
-          <div className="mt-1 text-sm text-slate-500">
+          <div className="text-sm font-bold text-white">Informations</div>
+          <div className="mt-1 text-sm text-slate-400">
             Donne un titre clair et une description courte.
           </div>
 
           <div className="mt-4 space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="title">
+              <label className="block text-sm font-semibold text-white" htmlFor="title">
                 Titre <span className="text-red-500">*</span>
               </label>
               <input
@@ -113,18 +113,18 @@ export function CreateEvent() {
                 disabled={isPending}
                 placeholder="Ex: Concert privé • Rolling Stones"
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "placeholder:text-slate-400",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "placeholder:text-slate-500",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.title ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.title ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.title && <div className="mt-1 text-sm text-red-600">{errors.title}</div>}
+              {errors.title && <div className="mt-1 text-sm text-red-400">{errors.title}</div>}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="description">
+              <label className="block text-sm font-semibold text-white" htmlFor="description">
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -136,25 +136,25 @@ export function CreateEvent() {
                 disabled={isPending}
                 placeholder="Décris l'événement, le déroulé, les infos importantes…"
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "placeholder:text-slate-400",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "placeholder:text-slate-500",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.description ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.description ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.description && <div className="mt-1 text-sm text-red-600">{errors.description}</div>}
+              {errors.description && <div className="mt-1 text-sm text-red-400">{errors.description}</div>}
             </div>
           </div>
         </div>
 
         <div className="pt-2">
-          <div className="text-sm font-bold text-slate-900">Lieu et date</div>
-          <div className="mt-1 text-sm text-slate-500">Où et quand ça se passe ?</div>
+          <div className="text-sm font-bold text-white">Lieu et date</div>
+          <div className="mt-1 text-sm text-slate-400">Où et quand ça se passe ?</div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="date">
+              <label className="block text-sm font-semibold text-white" htmlFor="date">
                 Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -165,17 +165,17 @@ export function CreateEvent() {
                 onChange={handleChange}
                 disabled={isPending}
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.date ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.date ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.date && <div className="mt-1 text-sm text-red-600">{errors.date}</div>}
+              {errors.date && <div className="mt-1 text-sm text-red-400">{errors.date}</div>}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="location">
+              <label className="block text-sm font-semibold text-white" htmlFor="location">
                 Lieu <span className="text-red-500">*</span>
               </label>
               <input
@@ -187,25 +187,25 @@ export function CreateEvent() {
                 disabled={isPending}
                 placeholder="Ex: Paris, La Cigale"
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "placeholder:text-slate-400",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "placeholder:text-slate-500",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.location ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.location ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.location && <div className="mt-1 text-sm text-red-600">{errors.location}</div>}
+              {errors.location && <div className="mt-1 text-sm text-red-400">{errors.location}</div>}
             </div>
           </div>
         </div>
 
         <div className="pt-2">
-          <div className="text-sm font-bold text-slate-900">Tarification</div>
-          <div className="mt-1 text-sm text-slate-500">Définis le prix et la capacité maximale.</div>
+          <div className="text-sm font-bold text-white">Tarification</div>
+          <div className="mt-1 text-sm text-slate-400">Définis le prix et la capacité maximale.</div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="price">
+              <label className="block text-sm font-semibold text-white" htmlFor="price">
                 Prix (€) <span className="text-red-500">*</span>
               </label>
               <input
@@ -217,17 +217,17 @@ export function CreateEvent() {
                 onChange={handleChange}
                 disabled={isPending}
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.price ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.price ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.price && <div className="mt-1 text-sm text-red-600">{errors.price}</div>}
+              {errors.price && <div className="mt-1 text-sm text-red-400">{errors.price}</div>}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900" htmlFor="capacity">
+              <label className="block text-sm font-semibold text-white" htmlFor="capacity">
                 Capacité <span className="text-red-500">*</span>
               </label>
               <input
@@ -239,13 +239,13 @@ export function CreateEvent() {
                 onChange={handleChange}
                 disabled={isPending}
                 className={[
-                  "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-slate-900 shadow-sm",
-                  "focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400",
+                  "mt-1 w-full rounded-xl border bg-slate-700 px-3 py-2.5 text-white shadow-sm",
+                  "focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500",
                   "disabled:opacity-60",
-                  errors.capacity ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-slate-200",
+                  errors.capacity ? "border-red-700 focus:border-red-600 focus:ring-red-900" : "border-slate-600",
                 ].join(" ")}
               />
-              {errors.capacity && <div className="mt-1 text-sm text-red-600">{errors.capacity}</div>}
+              {errors.capacity && <div className="mt-1 text-sm text-red-400">{errors.capacity}</div>}
             </div>
           </div>
         </div>
@@ -254,8 +254,8 @@ export function CreateEvent() {
           <button
             type="button"
             onClick={() => navigate("/events")}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700
-                       shadow-sm hover:bg-slate-50 transition"
+            className="rounded-xl border border-slate-700 bg-slate-700 px-4 py-2.5 text-sm font-semibold text-white
+                       shadow-sm hover:bg-slate-600 transition"
             disabled={isPending}
           >
             Annuler
@@ -265,7 +265,7 @@ export function CreateEvent() {
             type="submit"
             disabled={isPending}
             className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm
-                       hover:bg-indigo-700 transition disabled:opacity-60"
+                       hover:bg-indigo-500 transition disabled:opacity-60"
           >
             {isPending ? "Création en cours…" : "Créer l'événement"}
           </button>

@@ -15,7 +15,7 @@ export function OrganizerDashboard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center text-slate-400 shadow-sm">
         Chargement du tableau de bord…
       </div>
     );
@@ -23,7 +23,7 @@ export function OrganizerDashboard() {
 
   if (isError || !dashboard) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700 shadow-sm">
+      <div className="rounded-2xl border border-red-900 bg-red-950 p-6 text-red-400 shadow-sm">
         Erreur : {error instanceof Error ? error.message : "Impossible de charger le tableau de bord"}
       </div>
     );
@@ -33,10 +33,10 @@ export function OrganizerDashboard() {
     <div className="max-w-7xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
           Tableau de bord
         </h1>
-        <p className="text-sm text-slate-500 mt-1">Vue d’ensemble de tes performances</p>
+        <p className="text-sm text-slate-400 mt-1">Vue d'ensemble de tes performances</p>
       </div>
 
       {/* KPIs */}
@@ -71,21 +71,21 @@ export function OrganizerDashboard() {
       </div>
 
       {/* Table */}
-      <section className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="p-6 sm:p-8 border-b border-slate-200">
-          <h2 className="text-lg font-extrabold text-slate-900">Mes événements</h2>
-          <p className="text-sm text-slate-500 mt-1">Suivi des ventes et du remplissage</p>
+      <section className="rounded-3xl border border-slate-700 bg-slate-800 shadow-sm overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-slate-700">
+          <h2 className="text-lg font-extrabold text-white">Mes événements</h2>
+          <p className="text-sm text-slate-400 mt-1">Suivi des ventes et du remplissage</p>
         </div>
 
         {dashboard.events.length === 0 ? (
-          <div className="p-8 text-slate-600">
+          <div className="p-8 text-slate-400">
             Vous n&apos;avez pas encore créé d&apos;événement.
           </div>
         ) : (
           <div className="overflow-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-50">
-                <tr className="text-left text-slate-600">
+              <thead className="bg-slate-700">
+                <tr className="text-left text-slate-300">
                   <th className="px-6 py-3 font-semibold">Titre</th>
                   <th className="px-6 py-3 font-semibold whitespace-nowrap">Billets vendus</th>
                   <th className="px-6 py-3 font-semibold">Capacité</th>
@@ -98,7 +98,7 @@ export function OrganizerDashboard() {
                 {dashboard.events.map((event) => {
                   const pct = clampPct(event.capacity ? (event.ticketsSold / event.capacity) * 100 : 0);
                   return (
-                    <tr key={event.id} className="hover:bg-slate-50 transition">
+                    <tr key={event.id} className="hover:bg-slate-700 transition">
                       <td className="px-6 py-4">
                         <div className="font-semibold text-slate-900">{event.title}</div>
                       </td>
@@ -119,11 +119,11 @@ export function OrganizerDashboard() {
                               style={{ width: `${pct}%` }}
                             />
                           </div>
-                          <div className="text-xs font-semibold text-slate-600 w-10 text-right">
+                          <div className="text-xs font-semibold text-slate-400 w-10 text-right">
                             {pct.toFixed(0)}%
                           </div>
                         </div>
-                        <div className="mt-1 text-xs text-slate-500">
+                        <div className="mt-1 text-xs text-slate-400">
                           {event.ticketsSold}/{event.capacity}
                         </div>
                       </td>
@@ -149,13 +149,13 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-700 bg-slate-800 p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm font-semibold text-slate-500">{title}</div>
-          <div className="mt-1 text-2xl font-extrabold text-slate-900">{value}</div>
+          <div className="text-sm font-semibold text-slate-400">{title}</div>
+          <div className="mt-1 text-2xl font-extrabold text-white">{value}</div>
         </div>
-        <div className="h-10 w-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-2xl bg-slate-700 border border-slate-600 flex items-center justify-center">
           {icon}
         </div>
       </div>

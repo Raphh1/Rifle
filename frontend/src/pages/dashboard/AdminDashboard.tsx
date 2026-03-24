@@ -10,7 +10,7 @@ export function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center text-slate-400 shadow-sm">
         Chargement du tableau de bord…
       </div>
     );
@@ -18,7 +18,7 @@ export function AdminDashboard() {
 
   if (isError || !dashboard) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700 shadow-sm">
+      <div className="rounded-2xl border border-red-900 bg-red-950 p-6 text-red-400 shadow-sm">
         Erreur : {error instanceof Error ? error.message : "Impossible de charger le tableau de bord"}
       </div>
     );
@@ -31,10 +31,10 @@ export function AdminDashboard() {
     <div className="max-w-7xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
           Tableau de bord
         </h1>
-        <p className="text-sm text-slate-500 mt-1">Vue globale de la plateforme</p>
+        <p className="text-sm text-slate-400 mt-1">Vue globale de la plateforme</p>
       </div>
 
       {/* KPIs */}
@@ -78,10 +78,10 @@ export function AdminDashboard() {
       </div>
 
       {/* Summary */}
-      <section className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="p-6 sm:p-8 border-b border-slate-200">
-          <h2 className="text-lg font-extrabold text-slate-900">Résumé plateforme</h2>
-          <p className="text-sm text-slate-500 mt-1">Quelques indicateurs rapides</p>
+      <section className="rounded-3xl border border-slate-700 bg-slate-800 shadow-sm overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-slate-700">
+          <h2 className="text-lg font-extrabold text-white">Résumé plateforme</h2>
+          <p className="text-sm text-slate-400 mt-1">Quelques indicateurs rapides</p>
         </div>
 
         <div className="p-6 sm:p-8">
@@ -98,8 +98,8 @@ export function AdminDashboard() {
             />
           </div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-            <div className="font-semibold text-slate-900">Conseil</div>
+          <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-700 p-4 text-sm text-slate-300">
+            <div className="font-semibold text-slate-100">Conseil</div>
             <div className="mt-1">
               Surveille le ratio <span className="font-semibold">billets vendus / événements</span> pour détecter
               rapidement les périodes creuses.
@@ -121,13 +121,13 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-700 bg-slate-800 p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm font-semibold text-slate-500">{title}</div>
-          <div className="mt-1 text-2xl font-extrabold text-slate-900">{value}</div>
+          <div className="text-sm font-semibold text-slate-400">{title}</div>
+          <div className="mt-1 text-2xl font-extrabold text-white">{value}</div>
         </div>
-        <div className="h-10 w-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-2xl bg-slate-700 border border-slate-600 flex items-center justify-center">
           {icon}
         </div>
       </div>
@@ -145,10 +145,10 @@ function InfoCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-semibold text-slate-500">{title}</div>
-      <div className="mt-1 text-lg font-extrabold text-slate-900">{value}</div>
-      {hint && <div className="mt-1 text-xs text-slate-500">{hint}</div>}
+    <div className="rounded-2xl border border-slate-700 bg-slate-800 p-4">
+      <div className="text-xs font-semibold text-slate-400">{title}</div>
+      <div className="mt-1 text-lg font-extrabold text-white">{value}</div>
+      {hint && <div className="mt-1 text-xs text-slate-400">{hint}</div>}
     </div>
   );
 }

@@ -16,16 +16,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="dark min-h-screen bg-slate-950 dark:bg-slate-950 flex flex-col text-white dark:text-white">
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/80 dark:bg-slate-900/80 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav className="flex h-16 items-center justify-between">
             {/* Left: Logo */}
             <Link
               to="/"
               onClick={closeMobile}
-              className="text-lg font-extrabold tracking-tight text-indigo-600 hover:text-indigo-700"
+              className="text-lg font-extrabold tracking-tight text-indigo-400 hover:text-indigo-300"
             >
               Rifle
             </Link>
@@ -55,15 +55,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
-                  <span className="text-sm font-semibold text-slate-700 truncate max-w-[180px]">
+                  <span className="text-sm font-semibold text-slate-300 truncate max-w-[180px]">
                     {user.name}
                   </span>
 
                   <button
                     onClick={handleLogout}
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700
-                               shadow-sm hover:bg-slate-50 transition
-                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+                    className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-100
+                               shadow-sm hover:bg-slate-700 transition
+                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
                   >
                     Déconnexion
                   </button>
@@ -72,16 +72,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <>
                   <Link
                     to="/login"
-                    className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition
-                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+                    className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition
+                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
                   >
                     Connexion
                   </Link>
                   <Link
                     to="/register"
                     className="rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm
-                               hover:bg-indigo-700 transition
-                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+                               hover:bg-indigo-500 transition
+                               focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-400"
                   >
                     S&apos;inscrire
                   </Link>
@@ -92,9 +92,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {/* Mobile button */}
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white p-2
-                         text-slate-700 shadow-sm hover:bg-slate-50 transition
-                         focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+              className="md:hidden inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800 p-2
+                         text-slate-300 shadow-sm hover:bg-slate-700 transition
+                         focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Ouvrir le menu"
               aria-expanded={mobileOpen}
@@ -114,7 +114,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* MOBILE MENU */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white">
+          <div className="md:hidden border-t border-slate-800 bg-slate-900">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 py-3 space-y-1">
               <MobileNavLink to="/events" onClick={closeMobile}>
                 Événements
@@ -147,12 +147,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   )}
 
                   <div className="pt-3 border-t border-slate-200">
-                    <div className="text-sm font-semibold text-slate-700 mb-2">{user.name}</div>
+                    <div className="text-sm font-semibold text-slate-300 mb-2">{user.name}</div>
                     <button
                       onClick={handleLogout}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700
-                                 shadow-sm hover:bg-slate-50 transition
-                                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+                      className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-100
+                                 shadow-sm hover:bg-slate-700 transition
+                                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
                     >
                       Déconnexion
                     </button>
@@ -161,12 +161,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
               )}
 
               {!user && (
-                <div className="pt-3 border-t border-slate-200 flex gap-2">
+                <div className="pt-3 border-t border-slate-800 flex gap-2">
                   <Link
                     to="/login"
                     onClick={closeMobile}
-                    className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-center text-sm font-semibold text-slate-700
-                               shadow-sm hover:bg-slate-50 transition"
+                    className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-center text-sm font-semibold text-slate-300
+                               shadow-sm hover:bg-slate-700 transition"
                   >
                     Connexion
                   </Link>
@@ -174,7 +174,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     to="/register"
                     onClick={closeMobile}
                     className="flex-1 rounded-xl bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm
-                               hover:bg-indigo-700 transition"
+                               hover:bg-indigo-500 transition"
                   >
                     S&apos;inscrire
                   </Link>
@@ -191,8 +191,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-slate-500">
+      <footer className="border-t border-slate-800 bg-slate-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-slate-400">
           © {new Date().getFullYear()} Rifle. Tous droits réservés.
         </div>
       </footer>
@@ -205,8 +205,8 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link
       to={to}
-      className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition
-                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+      className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition
+                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
     >
       {children}
     </Link>
@@ -227,8 +227,8 @@ function MobileNavLink({
     <Link
       to={to}
       onClick={onClick}
-      className="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition
-                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
+      className="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition
+                 focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
     >
       {children}
     </Link>

@@ -264,20 +264,20 @@ export function Scanner() {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-          <div className="relative w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-5 shadow-xl text-slate-900">
+          <div className="relative w-full max-w-sm rounded-3xl border border-slate-700 bg-slate-800 p-5 shadow-xl text-white">
             <div className="flex items-start gap-3">
               <div
                 className={[
                   "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0",
                   notification.type === "success"
-                    ? "bg-emerald-50"
-                    : "bg-red-50",
+                    ? "bg-emerald-900"
+                    : "bg-red-900",
                 ].join(" ")}
               >
                 {notification.type === "success" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-emerald-700"
+                    className="h-5 w-5 text-emerald-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -292,7 +292,7 @@ export function Scanner() {
                 ) : (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-red-700"
+                    className="h-5 w-5 text-red-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -336,7 +336,7 @@ export function Scanner() {
               <button
                 onClick={() => setNotification(null)}
                 className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700
-                           hover:bg-slate-50 transition"
+                           hover:bg-slate-700 transition"
               >
                 Fermer
               </button>

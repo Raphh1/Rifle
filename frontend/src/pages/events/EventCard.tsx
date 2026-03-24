@@ -27,7 +27,7 @@ export function EventCard({ event }: { event: EventCardModel }) {
   return (
     <Link
       to={`/events/${event.id}`}
-      className="group block rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm
+      className="group block rounded-2xl overflow-hidden border border-slate-800 bg-slate-800 shadow-sm
                  transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl
                  focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 focus-visible:border-indigo-400"
     >
@@ -44,7 +44,7 @@ export function EventCard({ event }: { event: EventCardModel }) {
 
         {/* Price badge */}
         <div className="absolute right-3 top-3">
-          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm">
+          <span className="inline-flex items-center rounded-full bg-slate-600/90 px-3 py-1 text-xs font-semibold text-slate-100 shadow-sm">
             {event.price}€
           </span>
         </div>
@@ -61,9 +61,9 @@ export function EventCard({ event }: { event: EventCardModel }) {
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm text-slate-700 font-medium truncate">{event.location}</div>
-            <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-              <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5">
+            <div className="text-sm text-slate-200 font-medium truncate">{event.location}</div>
+            <div className="mt-2 flex items-center gap-2 text-xs text-slate-200">
+              <span className="inline-flex items-center rounded-full bg-slate-700 px-2 py-0.5">
                 {pct}% rempli
               </span>
               {capacity > 0 ? (
@@ -77,7 +77,7 @@ export function EventCard({ event }: { event: EventCardModel }) {
           </div>
 
           <div className="text-right shrink-0">
-            <div className="text-xs text-slate-500">Restantes</div>
+            <div className="text-xs text-slate-400">Restantes</div>
             <div className="text-sm font-semibold text-slate-900">{remaining}</div>
           </div>
         </div>

@@ -19,16 +19,16 @@ export function EventList() {
   const meta = response?.meta;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900 border border-slate-700 rounded-2xl shadow-sm p-6 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header / Toolbar */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-sm p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                 Événements disponibles
               </h1>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-slate-400 mt-1">
                 Trouvez des événements près de chez vous
               </p>
             </div>
@@ -37,7 +37,7 @@ export function EventList() {
               {/* Search */}
               <div className="relative w-full sm:w-80">
                 <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -60,8 +60,8 @@ export function EventList() {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white shadow-sm
-                             focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white shadow-sm
+                             focus:outline-none focus:ring-4 focus:ring-indigo-900 focus:border-indigo-500"
                 />
               </div>
 
@@ -70,8 +70,8 @@ export function EventList() {
                 <Link
                   to="/create-event"
                   className="inline-flex justify-center items-center rounded-xl bg-indigo-600 px-4 py-2.5
-                             text-white font-semibold shadow-sm hover:bg-indigo-700 transition
-                             focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+                             text-white font-semibold shadow-sm hover:bg-indigo-500 transition
+                             focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
                 >
                   Créer
                 </Link>
@@ -83,13 +83,13 @@ export function EventList() {
         {/* Content */}
         <div className="mt-6">
           {isLoading && (
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center text-slate-600">
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-sm p-10 text-center text-slate-400">
               Chargement des événements…
             </div>
           )}
 
           {isError && (
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center text-red-600">
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-sm p-10 text-center text-red-400">
               Erreur : {error instanceof Error ? error.message : "Unknown error"}
             </div>
           )}
@@ -97,16 +97,15 @@ export function EventList() {
           {!isLoading && !isError && (
             <>
               {events.length === 0 ? (
-                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center">
-                  <p className="text-slate-700 text-lg font-semibold">Aucun événement trouvé.</p>
-                  <p className="text-slate-500 mt-2">Essaie une autre recherche.</p>
-
+                <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-sm p-10 text-center">
+                  <p className="text-white text-lg font-semibold">Aucun événement trouvé.</p>
+                  <p className="text-slate-400 mt-2">Essaie une autre recherche.</p>
                   {user?.role === "organizer" && (
                     <div className="mt-6">
                       <Link
                         to="/create-event"
                         className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5
-                                   text-white font-semibold shadow-sm hover:bg-emerald-700 transition"
+                                   text-white font-semibold shadow-sm hover:bg-emerald-500 transition"
                       >
                         Créer ton premier événement
                       </Link>
@@ -127,22 +126,22 @@ export function EventList() {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="rounded-xl bg-white border border-slate-200 px-4 py-2 font-semibold text-slate-700
-                               shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition"
+                    className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2 font-semibold text-white
+                               shadow-sm hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 transition"
                   >
                     Précédent
                   </button>
 
-                  <div className="text-sm text-slate-600">
-                    Page <span className="font-semibold text-slate-900">{page}</span> sur{" "}
-                    <span className="font-semibold text-slate-900">{meta.last_page}</span>
+                  <div className="text-sm text-slate-400">
+                    Page <span className="font-semibold text-white">{page}</span> sur{" "}
+                    <span className="font-semibold text-white">{meta.last_page}</span>
                   </div>
 
                   <button
                     onClick={() => setPage((p) => p + 1)}
                     disabled={page >= meta.last_page}
-                    className="rounded-xl bg-white border border-slate-200 px-4 py-2 font-semibold text-slate-700
-                               shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition"
+                    className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2 font-semibold text-white
+                               shadow-sm hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 transition"
                   >
                     Suivant
                   </button>

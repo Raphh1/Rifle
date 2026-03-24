@@ -7,6 +7,7 @@ Frontend moderne pour la plateforme de gestion d'événements **Rifle**, constru
 ## 🚀 Démarrage rapide
 
 ### Prerequisites
+
 - Node.js 18+
 - npm ou yarn
 
@@ -92,6 +93,7 @@ src/
 ### AuthContext
 
 Le contexte gère :
+
 - État utilisateur (`user`)
 - Jetons JWT stockés en localStorage
 - Méthodes : `login()`, `register()`, `logout()`
@@ -102,7 +104,7 @@ import { useAuth } from "@/context/AuthContext";
 
 function MyComponent() {
   const { user, login, isLoading, error } = useAuth();
-  
+
   // Utilisation...
 }
 ```
@@ -110,24 +112,21 @@ function MyComponent() {
 ### Routes protégées
 
 ```tsx
-<ProtectedRoute 
-  element={<AdminDashboard />} 
-  requiredRole="admin" 
-/>
+<ProtectedRoute element={<AdminDashboard />} requiredRole="admin" />
 ```
 
 ## 🛣️ Routes disponibles
 
-| Route | Description | Authentification |
-|-------|-------------|-----------------|
-| `/login` | Page de connexion | ❌ |
-| `/register` | Page d'inscription | ❌ |
-| `/events` | Liste des événements | ❌ |
-| `/events/:id` | Détails d'un événement | ❌ |
-| `/create-event` | Créer un événement | ✅ Organisateur |
-| `/tickets` | Mes billets | ✅ |
-| `/tickets/:id/validate` | Valider un billet | ✅ Organisateur |
-| `/dashboard` | Tableau de bord | ✅ Organisateur/Admin |
+| Route                   | Description            | Authentification      |
+| ----------------------- | ---------------------- | --------------------- |
+| `/login`                | Page de connexion      | ❌                    |
+| `/register`             | Page d'inscription     | ❌                    |
+| `/events`               | Liste des événements   | ❌                    |
+| `/events/:id`           | Détails d'un événement | ❌                    |
+| `/create-event`         | Créer un événement     | ✅ Organisateur       |
+| `/tickets`              | Mes billets            | ✅                    |
+| `/tickets/:id/validate` | Valider un billet      | ✅ Organisateur       |
+| `/dashboard`            | Tableau de bord        | ✅ Organisateur/Admin |
 
 ## 🧪 API Client
 
@@ -164,6 +163,7 @@ const validData = loginSchema.parse(formData);
 ```
 
 Schémas disponibles :
+
 - `loginSchema`
 - `registerSchema`
 
@@ -174,6 +174,7 @@ Schémas disponibles :
 - Thème cohérent avec couleurs principales
 
 ### Couleurs principales
+
 - Primaire: `#667eea`
 - Secondaire: `#764ba2`
 - Background: `#f5f5f5`
@@ -224,17 +225,21 @@ Schémas disponibles :
 ## 🐛 Dépannage
 
 ### CORS errors
+
 Assurez-vous que le backend est configuré pour accepter les requêtes depuis `http://localhost:5173`
 
 ### Token expiré
+
 Les 401 sont gérés automatiquement par les interceptors. Vérifiez le endpoint `/auth/refresh-token` du backend.
 
 ### Erreurs TypeScript
+
 Vérifiez que tous les types sont exportés dans `src/types/api.ts`
 
 ## 📝 Commits
 
 Convention :
+
 ```
 feat(front): add login page
 fix(front): correct axios interceptor
@@ -244,11 +249,13 @@ docs(front): update README
 ## 🚀 Deployment
 
 ### Build for production
+
 ```bash
 npm run build
 ```
 
 ### Preview
+
 ```bash
 npm run preview
 ```

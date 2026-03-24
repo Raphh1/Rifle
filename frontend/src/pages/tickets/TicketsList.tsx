@@ -19,7 +19,7 @@ function StatusBadge({ status }: { status: string }) {
       : status === "pending"
       ? "bg-amber-50 text-amber-700 border-amber-200"
       : status === "used"
-      ? "bg-slate-100 text-slate-600 border-slate-200"
+      ? "bg-slate-700 text-white border-slate-700"
       : "bg-red-50 text-red-700 border-red-200";
 
   const label =
@@ -58,7 +58,7 @@ export function TicketsList() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-sm">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center text-slate-400 shadow-sm">
         Chargement de vos billets…
       </div>
     );
@@ -76,17 +76,17 @@ export function TicketsList() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
           Mes billets
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           Retrouvez tous vos billets achetés
         </p>
       </div>
 
       {!tickets || tickets.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-slate-700 font-semibold">Vous n&apos;avez pas encore acheté de billets.</p>
+        <div className="rounded-2xl border border-slate-700 bg-slate-800 p-10 text-center shadow-sm">
+          <p className="text-white font-semibold">Vous n&apos;avez pas encore acheté de billets.</p>
 
           <Link
             to="/events"
@@ -101,20 +101,20 @@ export function TicketsList() {
           {tickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col
+              className="rounded-2xl border border-slate-700 bg-slate-800 p-4 shadow-sm flex flex-col
                          transition hover:shadow-md"
             >
               {ticket.event && (
                 <div className="mb-4">
-                  <h3 className="text-base font-bold text-slate-900">
+                  <h3 className="text-base font-bold text-white">
                     {ticket.event.title}
                   </h3>
 
-                  <div className="mt-1 text-sm text-slate-500">
+                  <div className="mt-1 text-sm text-slate-400">
                     {formatDate(ticket.event.date)}
                   </div>
 
-                  <div className="text-sm text-slate-600">
+                  <div className="text-sm text-slate-400">
                     {ticket.event.location}
                   </div>
                 </div>
@@ -122,14 +122,14 @@ export function TicketsList() {
 
               {/* QR */}
               <div className="flex justify-center my-3">
-                <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="rounded-xl border border-white bg-slate-800 p-3">
                   <QRCode value={ticket.qrCode || "INVALID"} size={120} />
                 </div>
               </div>
 
               {/* Footer */}
               <div className="flex items-center justify-between mt-3">
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-slate-400">
                   Billet #{ticket.id.slice(0, 8)}
                 </div>
 
@@ -141,8 +141,8 @@ export function TicketsList() {
                 <div className="mt-4 flex gap-2">
                   <Link
                     to={`/tickets/${ticket.id}/validate`}
-                    className="flex-1 text-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold
-                               text-slate-700 shadow-sm hover:bg-slate-50 transition"
+                    className="flex-1 text-center rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-semibold
+                               text-white shadow-sm hover:bg-slate-700 transition"
                   >
                     Valider
                   </Link>

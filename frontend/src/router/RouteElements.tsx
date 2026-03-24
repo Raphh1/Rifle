@@ -25,9 +25,9 @@ export function LayoutWrapper() {
 export function NotFoundPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-      <div className="text-6xl font-extrabold text-slate-900">404</div>
-      <div className="mt-2 text-lg font-bold text-slate-900">Page introuvable</div>
-      <div className="mt-2 text-sm text-slate-600">
+      <div className="text-6xl font-extrabold text-white">404</div>
+      <div className="mt-2 text-lg font-bold text-white">Page introuvable</div>
+      <div className="mt-2 text-sm text-slate-400">
         La page que vous recherchez n&apos;existe pas.
       </div>
 
