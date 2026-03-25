@@ -58,6 +58,13 @@ export interface PaginatedResponse<T> {
 
 // ============ EVENTS ============
 
+export type EventCategory = "concert" | "conference" | "festival" | "sport" | "theatre" | "exposition" | "autre";
+
+export interface CategoryOption {
+  value: EventCategory;
+  label: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -67,11 +74,21 @@ export interface Event {
   price: number;
   capacity: number;
   remaining: number;
+  category: EventCategory;
   imageUrl: string;
   organizer?: {
     id: string;
     name: string;
   };
+}
+
+export interface EventFilters {
+  search?: string;
+  category?: EventCategory | "";
+  dateFrom?: string;
+  dateTo?: string;
+  priceMin?: number | "";
+  priceMax?: number | "";
 }
 
 export interface CreateEventRequest {
@@ -81,6 +98,7 @@ export interface CreateEventRequest {
   location: string;
   price: number;
   capacity: number;
+  category: EventCategory;
   imageUrl: string;
 }
 

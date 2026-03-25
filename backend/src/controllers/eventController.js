@@ -5,7 +5,12 @@ export const getAllEvents = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || "";
-    
+    const category = req.query.category || "";
+    const dateFrom = req.query.dateFrom || "";
+    const dateTo = req.query.dateTo || "";
+    const priceMin = req.query.priceMin ? parseFloat(req.query.priceMin) : null;
+    const priceMax = req.query.priceMax ? parseFloat(req.query.priceMax) : null;
+
     const skip = (page - 1) * limit;
 
     const where = {};
@@ -15,6 +20,22 @@ export const getAllEvents = async (req, res) => {
         { description: { contains: search, mode: 'insensitive' } },
         { location: { contains: search, mode: 'insensitive' } }
       ];
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (dateFrom || dateTo) {
+      where.date = {};
+      if (dateFrom) where.date.gte = new Date(dateFrom);
+      if (dateTo) where.date.lte = new Date(dateTo);
+    }
+
+    if (priceMin !== null || priceMax !== null) {
+      where.price = {};
+      if (priceMin !== null) where.price.gte = priceMin;
+      if (priceMax !== null) where.price.lte = priceMax;
     }
 
     const [events, total] = await prisma.$transaction([
@@ -77,9 +98,22 @@ export const getEventById = async (req, res) => {
   }
 };
 
+export const getCategories = async (_req, res) => {
+  const categories = [
+    { value: 'concert', label: 'Concert' },
+    { value: 'conference', label: 'Conférence' },
+    { value: 'festival', label: 'Festival' },
+    { value: 'sport', label: 'Sport' },
+    { value: 'theatre', label: 'Théâtre' },
+    { value: 'exposition', label: 'Exposition' },
+    { value: 'autre', label: 'Autre' },
+  ];
+  res.json(categories);
+};
+
 export const createEvent = async (req, res) => {
   try {
-    const { title, description, date, location, price, capacity } = req.body;
+    const { title, description, date, location, price, capacity, category } = req.body;
     let imageUrl = req.body.imageUrl || ""; // Fallback
 
     // Si on a uploadé un fichier, on crée le chemin complet
@@ -96,6 +130,7 @@ export const createEvent = async (req, res) => {
         location,
         price: parseFloat(price),
         capacity: parseInt(capacity),
+        category: category || 'autre',
         imageUrl,
         organizerId: req.user.id,
       },
@@ -111,7 +146,7 @@ export const createEvent = async (req, res) => {
 export const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, location, price, capacity, imageUrl } = req.body;
+    const { title, description, date, location, price, capacity, category, imageUrl } = req.body;
 
     // Vérification des droits : Organisateur de l'événement ou Admin
     const existingEvent = await prisma.event.findUnique({ where: { id } });
@@ -123,7 +158,7 @@ export const updateEvent = async (req, res) => {
 
     const event = await prisma.event.update({
       where: { id },
-      data: { title, description, date, location, price, capacity, imageUrl },
+      data: { title, description, date, location, price, capacity, category, imageUrl },
     });
 
     res.json(event);

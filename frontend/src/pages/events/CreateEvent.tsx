@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { useCreateEvent } from "../../api/queries";
+import { useCreateEvent, useCategories } from "../../api/queries";
 import { createEventSchema, type CreateEventFormData } from "../../utils/validation";
 
 export function CreateEvent() {
   const navigate = useNavigate();
   const createEventMutation = useCreateEvent();
+  const { data: categories } = useCategories();
 
   const [formData, setFormData] = useState<CreateEventFormData>({
     title: "",
@@ -15,6 +16,7 @@ export function CreateEvent() {
     location: "",
     price: 0,
     capacity: 1,
+    category: "autre",
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -23,7 +25,7 @@ export function CreateEvent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -55,7 +57,7 @@ export function CreateEvent() {
 
     try {
       const validData = createEventSchema.parse(formData);
-      
+
       const submitData = new FormData();
       Object.entries(validData).forEach(([key, value]) => {
         submitData.append(key, value.toString());
@@ -94,9 +96,9 @@ export function CreateEvent() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 animate-fade-in relative z-10 px-4 sm:px-6">
-      
-      <button 
-        onClick={() => navigate('/events')} 
+
+      <button
+        onClick={() => navigate('/events')}
         className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-indigo-400 transition-colors group"
       >
         <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,7 +132,7 @@ export function CreateEvent() {
         noValidate
       >
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-blue-500/5 rounded-3xl pointer-events-none" />
-        
+
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-400">
@@ -189,6 +191,40 @@ export function CreateEvent() {
                 ].join(" ")}
               />
               {errors.description && <div className="mt-2 text-sm text-red-400 font-medium flex items-center gap-1"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{errors.description}</div>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-2" htmlFor="category">
+                Catégorie <span className="text-indigo-400">*</span>
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                disabled={isPending}
+                className={[
+                  "w-full rounded-xl border bg-slate-800/50 px-4 py-3 text-white shadow-inner transition-all duration-200",
+                  "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-slate-800",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  errors.category ? "border-red-500/50 bg-red-500/5 focus:ring-red-500" : "border-slate-700/60 hover:border-slate-600",
+                ].join(" ")}
+              >
+                {categories?.map((cat) => (
+                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                )) ?? (
+                  <>
+                    <option value="concert">Concert</option>
+                    <option value="conference">Conférence</option>
+                    <option value="festival">Festival</option>
+                    <option value="sport">Sport</option>
+                    <option value="theatre">Théâtre</option>
+                    <option value="exposition">Exposition</option>
+                    <option value="autre">Autre</option>
+                  </>
+                )}
+              </select>
+              {errors.category && <div className="mt-2 text-sm text-red-400 font-medium flex items-center gap-1"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{errors.category}</div>}
             </div>
 
             <div className="pt-2">

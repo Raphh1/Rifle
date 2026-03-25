@@ -46,6 +46,7 @@ import upload from "../middleware/upload.js";
 import {
   getAllEvents,
   getEventById,
+  getCategories,
   createEvent,
   updateEvent,
   deleteEvent,
@@ -98,6 +99,7 @@ const router = express.Router();
  *                       type: integer
  */
 router.get("/", getAllEvents);
+router.get("/categories", getCategories);
 
 /**
  * @swagger
