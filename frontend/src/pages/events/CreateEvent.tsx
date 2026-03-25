@@ -17,6 +17,8 @@ export function CreateEvent() {
     capacity: 1,
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
   // ✅ Fix TS7053 définitif : index signature
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -38,6 +40,14 @@ export function CreateEvent() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    } else {
+      setImageFile(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setGeneralError(null);
@@ -45,7 +55,18 @@ export function CreateEvent() {
 
     try {
       const validData = createEventSchema.parse(formData);
-      await createEventMutation.mutateAsync({ ...validData, imageUrl: "" });
+      
+      const submitData = new FormData();
+      Object.entries(validData).forEach(([key, value]) => {
+        submitData.append(key, value.toString());
+      });
+
+      if (imageFile) {
+        submitData.append("image", imageFile);
+      }
+
+      // Hack pour le type de FormData attendu via l'api, useCreateEvent accepte mtnt FormData
+      await createEventMutation.mutateAsync(submitData as any);
       navigate("/events");
     } catch (err) {
   if (err instanceof z.ZodError) {
@@ -168,6 +189,23 @@ export function CreateEvent() {
                 ].join(" ")}
               />
               {errors.description && <div className="mt-2 text-sm text-red-400 font-medium flex items-center gap-1"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{errors.description}</div>}
+            </div>
+
+            <div className="pt-2">
+              <label className="block text-sm font-semibold text-slate-300 mb-2" htmlFor="image">
+                Image de l'événement (Optionnel)
+              </label>
+              <div className="flex border border-slate-700/60 rounded-xl bg-slate-800/50 p-2 items-center">
+                <input
+                  id="image"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={isPending}
+                  className="w-full text-sm text-slate-400 file:cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30 file:transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+              </div>
             </div>
           </div>
         </div>

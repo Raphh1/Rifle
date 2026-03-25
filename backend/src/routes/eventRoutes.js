@@ -42,6 +42,7 @@
 
 import express from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 import {
   getAllEvents,
   getEventById,
@@ -143,7 +144,7 @@ router.get("/:id", getEventById);
  *       401:
  *         description: Non autorisé
  */
-router.post("/", authenticate, createEvent);
+router.post("/", authenticate, upload.single("image"), createEvent);
 
 /**
  * @swagger

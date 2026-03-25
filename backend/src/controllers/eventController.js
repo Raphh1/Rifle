@@ -79,7 +79,14 @@ export const getEventById = async (req, res) => {
 
 export const createEvent = async (req, res) => {
   try {
-    const { title, description, date, location, price, capacity, imageUrl } = req.body;
+    const { title, description, date, location, price, capacity } = req.body;
+    let imageUrl = req.body.imageUrl || ""; // Fallback
+
+    // Si on a uploadé un fichier, on crée le chemin complet
+    if (req.file) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    }
 
     const event = await prisma.event.create({
       data: {

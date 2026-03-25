@@ -42,11 +42,13 @@ export const useEventDetail = (eventId: string) => {
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (eventData: CreateEventRequest) => {
+    mutationFn: async (eventData: CreateEventRequest | FormData) => {
       // Backend returns Event directly
+      const isFormData = eventData instanceof FormData;
       const response = await api.post<Event>(
         "/events",
-        eventData
+        eventData,
+        isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined
       );
       return response.data;
     },
