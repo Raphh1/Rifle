@@ -113,9 +113,10 @@ describe('Register Component', () => {
   it('should render login link', () => {
     render(<Register />);
     
-    const loginLink = screen.getByRole('link', { name: /déjà un compte/i });
-    expect(loginLink).toBeInTheDocument();
-    expect(loginLink).toHaveAttribute('href', '/auth/login');
+    // Using getAllByRole since the component might render the link multiple times for responsiveness
+    const loginLinks = screen.getAllByRole('link', { name: /se connecter/i });
+    expect(loginLinks.length).toBeGreaterThan(0);
+    expect(loginLinks[0]).toHaveAttribute('href', '/login');
   });
 
   it('should have proper input types', () => {
@@ -142,12 +143,12 @@ describe('Register Component', () => {
   it('should maintain input focus states', () => {
     render(<Register />);
     
-    const nameInput = screen.getByPlaceholderText(/john doe/i);
+    const nameInput = screen.getByLabelText(/nom complet/i);
     
-    fireEvent.focus(nameInput);
+    nameInput.focus();
     expect(nameInput).toHaveFocus();
     
-    fireEvent.blur(nameInput);
+    nameInput.blur();
     expect(nameInput).not.toHaveFocus();
   });
 

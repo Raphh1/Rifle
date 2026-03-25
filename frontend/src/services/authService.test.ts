@@ -1,31 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { authService } from './authService';
-import axios from 'axios';
 
 // Mock axios
-vi.mock('axios');
-const mockedAxios = axios as unknown as { create: (config: unknown) => MockApiClient };
+const mockGet = vi.hoisted(() => vi.fn());
+const mockPost = vi.hoisted(() => vi.fn());
 
-interface MockApiClient {
-  post: ReturnType<typeof vi.fn>;
-  get: ReturnType<typeof vi.fn>;
-}
+vi.mock('axios', () => {
+  return {
+    default: {
+      create: vi.fn(() => ({
+        post: mockPost,
+        get: mockGet,
+      }))
+    }
+  };
+});
 
 describe('Auth Service', () => {
-  let mockApiClient: MockApiClient;
-
   beforeEach(() => {
-    // Reset mocks before each test
     vi.clearAllMocks();
-
-    // Create mock API client
-    mockApiClient = {
-      post: vi.fn(),
-      get: vi.fn(),
-    };
-
-    // Mock axios.create to return our mock client
-    (mockedAxios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockApiClient);
   });
 
   describe('register', () => {
@@ -37,7 +30,7 @@ describe('Auth Service', () => {
         role: 'user',
       };
 
-      mockApiClient.post.mockResolvedValueOnce({
+      mockPost.mockResolvedValueOnce({
         data: {
           token: 'jwt-token-123',
           user: mockUser,
@@ -48,7 +41,7 @@ describe('Auth Service', () => {
 
       expect(result.user).toEqual(mockUser);
       expect(result.accessToken).toBe('jwt-token-123');
-      expect(mockApiClient.post).toHaveBeenCalledWith(
+      expect(mockPost).toHaveBeenCalledWith(
         '/auth/register',
         expect.objectContaining({
           email: 'newuser@example.com',
@@ -59,7 +52,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error on registration failure', async () => {
-      mockApiClient.post.mockRejectedValueOnce(
+      mockPost.mockRejectedValueOnce(
         new Error('Email already exists')
       );
 
@@ -69,7 +62,7 @@ describe('Auth Service', () => {
     });
 
     it('should handle server error during registration', async () => {
-      mockApiClient.post.mockRejectedValueOnce(
+      mockPost.mockRejectedValueOnce(
         new Error('Server error')
       );
 
@@ -88,7 +81,7 @@ describe('Auth Service', () => {
         role: 'user',
       };
 
-      mockApiClient.post.mockResolvedValueOnce({
+      mockPost.mockResolvedValueOnce({
         data: {
           token: 'jwt-token-456',
           user: mockUser,
@@ -99,7 +92,7 @@ describe('Auth Service', () => {
 
       expect(result.user).toEqual(mockUser);
       expect(result.accessToken).toBe('jwt-token-456');
-      expect(mockApiClient.post).toHaveBeenCalledWith(
+      expect(mockPost).toHaveBeenCalledWith(
         '/auth/login',
         expect.objectContaining({
           email: 'user@example.com',
@@ -109,7 +102,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error on invalid credentials', async () => {
-      mockApiClient.post.mockRejectedValueOnce(
+      mockPost.mockRejectedValueOnce(
         new Error('Invalid credentials')
       );
 
@@ -119,7 +112,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error on non-existent user', async () => {
-      mockApiClient.post.mockRejectedValueOnce(
+      mockPost.mockRejectedValueOnce(
         new Error('User not found')
       );
 
@@ -131,7 +124,7 @@ describe('Auth Service', () => {
 
   describe('refreshToken', () => {
     it('should return new access token', async () => {
-      mockApiClient.post.mockResolvedValueOnce({
+      mockPost.mockResolvedValueOnce({
         data: {
           success: true,
           data: {
@@ -143,11 +136,11 @@ describe('Auth Service', () => {
       const result = await authService.refreshToken();
 
       expect(result).toBe('new-jwt-token-789');
-      expect(mockApiClient.post).toHaveBeenCalledWith('/auth/refresh');
+      expect(mockPost).toHaveBeenCalledWith('/auth/refresh');
     });
 
     it('should throw error when refresh token is invalid', async () => {
-      mockApiClient.post.mockResolvedValueOnce({
+      mockPost.mockResolvedValueOnce({
         data: {
           success: false,
           error: 'Refresh token expired',
@@ -160,7 +153,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error when refresh request fails', async () => {
-      mockApiClient.post.mockRejectedValueOnce(
+      mockPost.mockRejectedValueOnce(
         new Error('Network error')
       );
 
@@ -177,7 +170,7 @@ describe('Auth Service', () => {
         role: 'user' as const,
       };
 
-      mockApiClient.get.mockResolvedValueOnce({
+      mockGet.mockResolvedValueOnce({
         data: {
           success: true,
           data: mockUser,
@@ -187,7 +180,7 @@ describe('Auth Service', () => {
       const result = await authService.getCurrentUser('valid-token');
 
       expect(result).toEqual(mockUser);
-      expect(mockApiClient.get).toHaveBeenCalledWith(
+      expect(mockGet).toHaveBeenCalledWith(
         '/auth/me',
         expect.objectContaining({
           headers: {
@@ -198,7 +191,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error if user is not authenticated', async () => {
-      mockApiClient.get.mockResolvedValueOnce({
+      mockGet.mockResolvedValueOnce({
         data: {
           success: false,
           error: 'Unauthorized',
@@ -211,7 +204,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error if request fails', async () => {
-      mockApiClient.get.mockRejectedValueOnce(
+      mockGet.mockRejectedValueOnce(
         new Error('Network error')
       );
 

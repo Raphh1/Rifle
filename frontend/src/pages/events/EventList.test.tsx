@@ -24,8 +24,9 @@ describe("EventList", () => {
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({ isLoading: true });
 
-    render(<EventList />);
-    expect(screen.getByText(/chargement|loading/i)).toBeInTheDocument();
+    const { container } = render(<EventList />);
+    // Check for the spinner loading element
+    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
   });
 
   it("renders list of events", () => {
@@ -82,7 +83,7 @@ describe("EventList", () => {
     });
 
     render(<EventList />);
-    expect(screen.getByText(/erreur|error/i)).toBeInTheDocument();
+    expect(screen.getByText(/impossible de charger les événements/i)).toBeInTheDocument();
   });
 
   it("renders empty state when no events", () => {
