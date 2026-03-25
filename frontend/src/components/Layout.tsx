@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import "../styles/animated-dots.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -16,16 +17,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="dark min-h-screen bg-slate-950 dark:bg-slate-950 flex flex-col text-white dark:text-white">
+    <div className="dark min-h-screen animated-dots-bg flex flex-col text-white dark:text-white">
+      {/* Animated Grid Background */}
+      <div className="dots-container">
+        <div className="dots-grid">
+          {Array.from({ length: 200 }).map((_, i) => (
+            <div key={i} className="dot"></div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="dots-content flex flex-col flex-1">
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/80 dark:bg-slate-900/80 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-indigo-500/10 bg-slate-950/60 backdrop-blur-xl supports-[backdrop-filter]:bg-slate-950/60 shadow-sm shadow-indigo-500/5 transition-all duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav className="flex h-16 items-center justify-between">
             {/* Left: Logo */}
             <Link
               to="/"
               onClick={closeMobile}
-              className="text-lg font-extrabold tracking-tight text-indigo-400 hover:text-indigo-300"
+              className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 drop-shadow-sm"
             >
               Rifle
             </Link>
@@ -196,6 +207,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           © {new Date().getFullYear()} Rifle. Tous droits réservés.
         </div>
       </footer>
+      </div>
     </div>
   );
 }

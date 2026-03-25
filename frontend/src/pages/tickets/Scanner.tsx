@@ -261,17 +261,18 @@ export function Scanner() {
 
       {/* Modal notification */}
       {notification && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-          <div className="relative w-full max-w-sm rounded-3xl border border-slate-700 bg-slate-800 p-5 shadow-xl text-white">
-            <div className="flex items-start gap-3">
+          <div className="relative w-full max-w-sm rounded-3xl border border-slate-700/50 bg-slate-900/90 backdrop-blur-xl p-6 shadow-2xl text-white animate-slide-up">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-blue-500/5 rounded-3xl pointer-events-none" />
+            <div className="relative z-10 flex items-start gap-4">
               <div
                 className={[
-                  "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0",
+                  "h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner",
                   notification.type === "success"
-                    ? "bg-emerald-900"
-                    : "bg-red-900",
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-red-500/20 text-red-400",
                 ].join(" ")}
               >
                 {notification.type === "success" ? (
@@ -310,33 +311,32 @@ export function Scanner() {
               <div className="min-w-0">
                 <div
                   className={[
-                    "text-sm font-extrabold",
+                    "text-lg font-extrabold",
                     notification.type === "success"
-                      ? "text-emerald-700"
-                      : "text-red-700",
+                      ? "text-emerald-400"
+                      : "text-red-400",
                   ].join(" ")}
                 >
                   {notification.title}
                 </div>
 
-                <div className="mt-2 text-sm text-slate-700 whitespace-pre-line">
+                <div className="mt-2 text-sm text-slate-300 whitespace-pre-line leading-relaxed">
                   {notification.text}
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 flex gap-2">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={resetScanner}
-                className="flex-1 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition"
+                className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:to-blue-500 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 Scanner le suivant
               </button>
 
               <button
                 onClick={() => setNotification(null)}
-                className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700
-                           hover:bg-slate-700 transition"
+                className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-600 transition-all focus:outline-none focus:ring-2 focus:ring-slate-500"
               >
                 Fermer
               </button>
