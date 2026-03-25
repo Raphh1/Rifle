@@ -4,10 +4,15 @@ import axios from 'axios';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = axios as unknown as { create: any };
+const mockedAxios = axios as unknown as { create: (config: unknown) => MockApiClient };
+
+interface MockApiClient {
+  post: ReturnType<typeof vi.fn>;
+  get: ReturnType<typeof vi.fn>;
+}
 
 describe('Auth Service', () => {
-  let mockApiClient: any;
+  let mockApiClient: MockApiClient;
 
   beforeEach(() => {
     // Reset mocks before each test
@@ -20,7 +25,7 @@ describe('Auth Service', () => {
     };
 
     // Mock axios.create to return our mock client
-    mockedAxios.create.mockReturnValue(mockApiClient);
+    (mockedAxios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockApiClient);
   });
 
   describe('register', () => {

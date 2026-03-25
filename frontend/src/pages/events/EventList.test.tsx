@@ -21,7 +21,7 @@ describe("EventList", () => {
   });
 
   it("renders loading state", () => {
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({ isLoading: true });
 
     render(<EventList />);
@@ -54,7 +54,7 @@ describe("EventList", () => {
       },
     ];
 
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -73,7 +73,7 @@ describe("EventList", () => {
   });
 
   it("renders error state", () => {
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: true,
@@ -86,7 +86,7 @@ describe("EventList", () => {
   });
 
   it("renders empty state when no events", () => {
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -116,7 +116,7 @@ describe("EventList", () => {
       },
     ];
 
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -158,7 +158,7 @@ describe("EventList", () => {
       },
     ];
 
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -189,7 +189,7 @@ describe("EventList", () => {
       },
     ];
 
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -217,7 +217,7 @@ describe("EventList", () => {
       imageUrl: "https://example.com/image.jpg",
     }));
 
-    const mockUseEvents = useEvents as any;
+    const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,

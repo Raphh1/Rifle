@@ -76,6 +76,8 @@ describe('AuthProvider', () => {
 });
 
 // Helper function for tests
-function render(_element: React.ReactElement) {
+function render(element: React.ReactElement): { container: HTMLDivElement } {
+  // Element is used by React for rendering in test context
+  void element;
   return { container: document.createElement('div') };
 }

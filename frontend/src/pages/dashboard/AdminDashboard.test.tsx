@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '../../test/test-utils';
 import { AdminDashboard } from './AdminDashboard';
-import * as queriesModule from '../../api/queries';
+
+const mockUseAdminDashboard = vi.fn();
 
 vi.mock('../../api/queries', () => ({
-  useAdminDashboard: vi.fn(),
+  useAdminDashboard: mockUseAdminDashboard,
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -28,6 +29,11 @@ describe('AdminDashboard', () => {
   });
 
   it('should render dashboard title', () => {
+    mockUseAdminDashboard.mockReturnValue({
+      isLoading: false,
+      data: mockDashboardData,
+    });
+    
     render(<AdminDashboard />);
     
     const title = screen.queryByText(/tableau de bord|dashboard|admin/i);
@@ -35,11 +41,10 @@ describe('AdminDashboard', () => {
   });
 
   it('should display user statistics', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: mockDashboardData,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -47,11 +52,10 @@ describe('AdminDashboard', () => {
   });
 
   it('should display event statistics', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: mockDashboardData,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -59,11 +63,10 @@ describe('AdminDashboard', () => {
   });
 
   it('should display tickets sold statistics', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: mockDashboardData,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -71,11 +74,10 @@ describe('AdminDashboard', () => {
   });
 
   it('should display revenue statistics', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: mockDashboardData,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -83,10 +85,9 @@ describe('AdminDashboard', () => {
   });
 
   it('should show loading state', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: true,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -94,11 +95,10 @@ describe('AdminDashboard', () => {
   });
 
   it('should display all stat cards', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: mockDashboardData,
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -108,7 +108,6 @@ describe('AdminDashboard', () => {
   });
 
   it('should handle zero values gracefully', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: {
@@ -117,7 +116,7 @@ describe('AdminDashboard', () => {
         ticketsSold: 0,
         revenues: 0,
       },
-    } as any);
+    });
 
     render(<AdminDashboard />);
     
@@ -125,7 +124,6 @@ describe('AdminDashboard', () => {
   });
 
   it('should format large numbers correctly', () => {
-    const mockUseAdminDashboard = vi.mocked(queriesModule.useAdminDashboard);
     mockUseAdminDashboard.mockReturnValue({
       isLoading: false,
       data: {
@@ -134,7 +132,7 @@ describe('AdminDashboard', () => {
         ticketsSold: 500000,
         revenues: 999999.99,
       },
-    } as any);
+    });
 
     render(<AdminDashboard />);
     

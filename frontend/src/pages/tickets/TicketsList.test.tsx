@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '../../test/test-utils';
 import { TicketsList } from './TicketsList';
-import * as queriesModule from '../../api/queries';
+
+const mockUseUserTickets = vi.fn();
 
 vi.mock('../../api/queries', () => ({
-  useTickets: vi.fn(),
+  useUserTickets: mockUseUserTickets,
   useBuyTicket: vi.fn(),
 }));
 
@@ -61,21 +62,19 @@ describe('TicketsList Component', () => {
   });
 
   it('should render loading state', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: true,
-    } as any);
+    });
 
     render(<TicketsList />);
     expect(screen.getByText(/chargement|loading/i)).toBeInTheDocument();
   });
 
   it('should display list of tickets', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: mockTickets,
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -84,11 +83,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should show ticket status badges', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: mockTickets,
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -97,11 +95,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should display event locations', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: mockTickets,
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -110,11 +107,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should render empty state when no tickets', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: [],
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -122,11 +118,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should display ticket prices', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: mockTickets,
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -134,11 +129,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should show QR code for each ticket', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: mockTickets,
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -148,12 +142,11 @@ describe('TicketsList Component', () => {
   });
 
   it('should handle error state', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       isError: true,
       error: new Error('Failed to load tickets'),
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -161,11 +154,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should display different status styles for paid tickets', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: [mockTickets[0]], // Only paid ticket
-    } as any);
+    });
 
     render(<TicketsList />);
     
@@ -173,11 +165,10 @@ describe('TicketsList Component', () => {
   });
 
   it('should display different status styles for used tickets', () => {
-    const mockUseTickets = vi.mocked(queriesModule.useTickets);
-    mockUseTickets.mockReturnValue({
+    mockUseUserTickets.mockReturnValue({
       isLoading: false,
       data: [mockTickets[1]], // Only used ticket
-    } as any);
+    });
 
     render(<TicketsList />);
     

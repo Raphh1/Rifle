@@ -3,7 +3,6 @@ import {
   loginSchema,
   registerSchema,
   createEventSchema,
-  type LoginFormData,
   type RegisterFormData,
   type CreateEventFormData,
 } from './validation';
@@ -34,7 +33,7 @@ describe('Validation Schemas', () => {
       const result = loginSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toContain('au moins 6 caractères');
+        expect(result.error.issues[0].message).toContain('au moins 6 caractères');
       }
     });
 
