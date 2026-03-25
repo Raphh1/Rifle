@@ -17,6 +17,16 @@ enum Role {
   admin
 }
 
+enum EventCategory {
+  concert
+  conference
+  festival
+  sport
+  theatre
+  exposition
+  autre
+}
+
 enum TicketStatus {
   pending
   paid
@@ -41,16 +51,17 @@ model User {
 }
 
 model Event {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   title       String
-  description String   @db.Text
+  description String        @db.Text
   date        DateTime
   location    String
   price       Float
   capacity    Int
+  category    EventCategory @default(autre)
   imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relations
   organizerId String
@@ -60,6 +71,7 @@ model Event {
   @@index([date])
   @@index([location])
   @@index([organizerId])
+  @@index([category])
   @@map("events")
 }
 

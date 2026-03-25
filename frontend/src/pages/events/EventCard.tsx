@@ -1,4 +1,25 @@
 import { Link } from "react-router-dom";
+import type { EventCategory } from "../../types/api";
+
+const CATEGORY_LABELS: Record<EventCategory, string> = {
+  concert: "Concert",
+  conference: "Conférence",
+  festival: "Festival",
+  sport: "Sport",
+  theatre: "Théâtre",
+  exposition: "Exposition",
+  autre: "Autre",
+};
+
+const CATEGORY_COLORS: Record<EventCategory, string> = {
+  concert: "from-pink-500 to-rose-500",
+  conference: "from-cyan-500 to-blue-500",
+  festival: "from-amber-500 to-orange-500",
+  sport: "from-emerald-500 to-green-500",
+  theatre: "from-purple-500 to-violet-500",
+  exposition: "from-teal-500 to-cyan-500",
+  autre: "from-slate-500 to-gray-500",
+};
 
 export type EventCardModel = {
   id: string | number;
@@ -8,6 +29,7 @@ export type EventCardModel = {
   location: string;
   capacity: number;
   remaining: number;
+  category?: EventCategory;
   imageUrl?: string | null;
 };
 
@@ -43,11 +65,16 @@ export function EventCard({ event }: { event: EventCardModel }) {
         {/* soft vignette + gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-90 pointer-events-none" />
 
-        {/* Price badge (glass) */}
-        <div className="absolute right-3 top-3">
+        {/* Badges */}
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
           <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-gradient-to-r from-indigo-600 to-blue-500 text-xs font-semibold text-white shadow-lg">
             <span className="whitespace-nowrap">{event.price}€</span>
           </div>
+          {event.category && event.category !== "autre" && (
+            <div className={`inline-flex items-center rounded-full px-2.5 py-1 bg-gradient-to-r ${CATEGORY_COLORS[event.category]} text-xs font-semibold text-white shadow-lg`}>
+              {CATEGORY_LABELS[event.category]}
+            </div>
+          )}
         </div>
 
         {/* Title + date */}

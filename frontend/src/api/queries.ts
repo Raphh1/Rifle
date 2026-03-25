@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   Event,
+  EventFilters,
+  CategoryOption,
   Ticket,
   PaginatedResponse,
   OrganizerDashboard,
@@ -14,16 +16,33 @@ import { api } from "./axiosClient";
 
 // ============ EVENTS ============
 
-export const useEvents = (page = 1, limit = 10, search = "") => {
+export const useEvents = (page = 1, limit = 10, filters: EventFilters = {}) => {
   return useQuery({
-    queryKey: ["events", page, limit, search],
+    queryKey: ["events", page, limit, filters],
     queryFn: async () => {
-      const response = await api.get<PaginatedResponse<Event>>("/events", {
-        params: { page, limit, search },
-      });
+      const params: Record<string, string | number> = { page, limit };
+      if (filters.search) params.search = filters.search;
+      if (filters.category) params.category = filters.category;
+      if (filters.dateFrom) params.dateFrom = filters.dateFrom;
+      if (filters.dateTo) params.dateTo = filters.dateTo;
+      if (filters.priceMin !== undefined && filters.priceMin !== "") params.priceMin = filters.priceMin;
+      if (filters.priceMax !== undefined && filters.priceMax !== "") params.priceMax = filters.priceMax;
+
+      const response = await api.get<PaginatedResponse<Event>>("/events", { params });
       return response.data;
     },
-    placeholderData: (previousData) => previousData, // Keep previous data while fetching
+    placeholderData: (previousData) => previousData,
+  });
+};
+
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await api.get<CategoryOption[]>("/events/categories");
+      return response.data;
+    },
+    staleTime: Infinity,
   });
 };
 
