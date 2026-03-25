@@ -57,7 +57,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </>
                   )}
 
-                  {user.role === "admin" && <NavLink to="/dashboard">Admin</NavLink>}
+                  {user.role === "admin" && (
+                    <>
+                      <NavLink to="/dashboard">Admin</NavLink>
+                      <NavLink to="/admin/users">Utilisateurs</NavLink>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -152,9 +157,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   )}
 
                   {user.role === "admin" && (
-                    <MobileNavLink to="/dashboard" onClick={closeMobile}>
-                      Admin
-                    </MobileNavLink>
+                    <>
+                      <MobileNavLink to="/dashboard" onClick={closeMobile}>
+                        Admin
+                      </MobileNavLink>
+                      <MobileNavLink to="/admin/users" onClick={closeMobile}>
+                        Utilisateurs
+                      </MobileNavLink>
+                    </>
                   )}
 
                   <div className="pt-3 border-t border-slate-200">

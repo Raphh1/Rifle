@@ -11,7 +11,8 @@
     "generate": "npx prisma generate --schema=src/prisma/schema.prisma",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --detectOpenHandles"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --detectOpenHandles",
+    "seed": "npx prisma db seed"
   },
   "prisma": {
     "seed": "node src/prisma/seed.js",

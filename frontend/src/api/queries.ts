@@ -5,6 +5,7 @@ import type {
   PaginatedResponse,
   OrganizerDashboard,
   AdminDashboard,
+  AdminUser,
   CreateEventRequest,
   TicketValidateRequest,
   ValidateTicketResponse,
@@ -150,6 +151,29 @@ export const useAdminDashboard = () => {
         "/dashboard/admin"
       );
       return response.data;
+    },
+  });
+};
+
+export const useAdminUsers = () => {
+  return useQuery({
+    queryKey: ["admin", "users"],
+    queryFn: async () => {
+      const response = await api.get<AdminUser[]>("/admin/users");
+      return response.data;
+    },
+  });
+};
+
+export const useUpdateUserRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, role }: { id: string; role: string }) => {
+      const response = await api.post<AdminUser>(`/admin/users/${id}/role`, { role });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },
   });
 };

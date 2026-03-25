@@ -10,6 +10,7 @@ import { TicketValidate } from "../pages/tickets/TicketValidate";
 import { TransferTicket } from "../pages/tickets/TransferTicket";
 import { Scanner } from "../pages/tickets/Scanner";
 import { Unauthorized } from "../pages/Unauthorized";
+import { AdminUsers } from "../pages/admin/AdminUsers";
 
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { LayoutWrapper, NotFoundPage, RoleBasedDashboard } from "./RouteElements";
@@ -50,7 +51,13 @@ export const router = createBrowserRouter([
       // ============ DASHBOARD ============
       {
         path: "/dashboard",
-        element: <ProtectedRoute element={<RoleBasedDashboard />} requiredRole="organizer" />,
+        element: <ProtectedRoute element={<RoleBasedDashboard />} />,
+      },
+
+      // ============ ADMIN ============
+      {
+        path: "/admin/users",
+        element: <ProtectedRoute element={<AdminUsers />} requiredRole="admin" />,
       },
 
       // ============ FALLBACK ============

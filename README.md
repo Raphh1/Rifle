@@ -33,32 +33,80 @@ Cette application permet aux utilisateurs de s'inscrire, gérer des événements
 
 ## 🚀 Installation et Lancement
 
-### Préoccupations
-- Node.js (v18+)
-- PostgreSQL (Local ou Docker)
+### Prérequis
+- **Docker & Docker Compose** (recommandé) OU Node.js v18+ + PostgreSQL 15
 
-### 1. Installation du Backend
+---
+
+### Option A — Docker Compose (recommandé)
+
+Lance le backend + la base de données + Adminer en une seule commande.
 
 ```bash
-cd backend
-npm install
-# Configuration de la DB
-cp .env.example .env # (Si présent, sinon créer .env avec DATABASE_URL)
-npx prisma migrate dev --name init
-# Lancement
-npm run dev
+# Depuis la racine du projet
+docker-compose up --build
 ```
-> API accessible sur `http://localhost:3000`
-> Documentation Swagger : `http://localhost:3000/api-docs`
 
-### 2. Installation du Frontend
+| Service   | URL                          | Description              |
+|-----------|------------------------------|--------------------------|
+| Backend   | http://localhost:3000/api    | API REST                 |
+| Swagger   | http://localhost:3000/api-docs | Documentation API      |
+| Adminer   | http://localhost:8080        | Interface base de données |
+
+> **Note** : Le frontend n'est pas inclus dans Docker Compose. Lance-le séparément (voir ci-dessous).
+
+Pour lancer le frontend en parallèle :
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-> Application accessible sur `http://localhost:5173`
+
+> Frontend : http://localhost:5173
+
+Pour arrêter les conteneurs :
+
+```bash
+docker-compose down
+# Pour supprimer aussi les données (volume PostgreSQL) :
+docker-compose down -v
+```
+
+---
+
+### Option B — Développement local (sans Docker)
+
+Prérequis : Node.js v18+ et PostgreSQL 15 installés localement.
+
+#### 1. Backend
+
+```bash
+cd backend
+npm install
+
+# Configurer l'environnement
+cp .env.example .env
+# Éditer .env : remplacer DATABASE_URL par postgresql://USER:PASSWORD@localhost:5432/rifle_db?schema=public
+
+# Appliquer les migrations Prisma
+npm run migrate
+
+# Lancer le serveur
+npm run dev
+```
+
+> API : `http://localhost:3000` — Swagger : `http://localhost:3000/api-docs`
+
+#### 2. Frontend (nouveau terminal)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+> Application : `http://localhost:5173`
 
 ---
 

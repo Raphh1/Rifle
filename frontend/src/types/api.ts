@@ -122,6 +122,12 @@ export interface ValidateTicketResponse {
 }
 
 
+// ============ ADMIN ============
+
+export interface AdminUser extends User {
+  createdAt: string;
+}
+
 // ============ DASHBOARD ============
 
 export interface EventDashboardData {
