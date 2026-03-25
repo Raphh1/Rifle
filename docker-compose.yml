@@ -1,8 +1,8 @@
 services:
+
   backend:
-    build: 
+    build:
       context: ./backend
-      dockerfile: Dockerfile
     container_name: rifle-backend
     ports:
       - "3000:3000"
@@ -12,8 +12,21 @@ services:
       - db
     volumes:
       - ./backend:/app
-      - /app/node_modules
-    command: npm run dev
+      - node_modules:/app/node_modules
+    command: sh -c "npm install && npx prisma generate && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: rifle-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - node_modules_frontend:/app/node_modules
+    command: sh -c "npm install && npm run dev"
 
   db:
     image: postgres:15
@@ -27,6 +40,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    
+    
 
   adminer:
     image: adminer
@@ -39,3 +54,5 @@ services:
 
 volumes:
   postgres_data:
+  node_modules:
+  node_modules_frontend:
