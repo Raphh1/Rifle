@@ -12,6 +12,12 @@ postgres_data
 frontend/dist
 backend/dist
 
+# Uploaded files
+backend/public/uploads/
+
+# Expo cache
+mobile/.expo/
+
 # Logs
 *.log
 
