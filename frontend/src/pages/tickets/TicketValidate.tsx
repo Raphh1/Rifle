@@ -68,6 +68,11 @@ export function TicketValidate() {
   }
 
   const handleValidate = async () => {
+    if (!ticket.qrCode) {
+      alert("QR code manquant pour ce billet.");
+      return;
+    }
+
     try {
       await validateMutation.mutateAsync({ qrCode: ticket.qrCode });
       navigate("/tickets");

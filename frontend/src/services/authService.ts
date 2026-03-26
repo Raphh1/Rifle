@@ -1,19 +1,10 @@
-import axios from "axios";
 import type {
   AuthData,
   LoginRequest,
   RegisterRequest,
   User,
 } from "../types/api";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { api } from "../api/axiosClient";
 
 export const authService = {
   /**
@@ -22,7 +13,7 @@ export const authService = {
    */
   register: async (email: string, password: string, name: string): Promise<AuthData> => {
     const payload: RegisterRequest = { email, password, name };
-    const response = await apiClient.post<{ token: string; user: User }>("/auth/register", payload);
+    const response = await api.post<{ token: string; user: User }>("/auth/register", payload);
     
     return {
       user: response.data.user,
@@ -36,7 +27,7 @@ export const authService = {
    */
   login: async (email: string, password: string): Promise<AuthData> => {
     const payload: LoginRequest = { email, password };
-    const response = await apiClient.post<{ token: string; user: User }>("/auth/login", payload);
+    const response = await api.post<{ token: string; user: User }>("/auth/login", payload);
     
     return {
       user: response.data.user,
@@ -49,11 +40,8 @@ export const authService = {
    * Renouveler le token d'accès
    */
   refreshToken: async (): Promise<string> => {
-    const response = await apiClient.post("/auth/refresh");
-    if (!response.data.success) {
-      throw new Error(response.data.error || "Token refresh failed");
-    }
-    return response.data.data.accessToken;
+    const response = await api.post<{ token: string }>("/auth/refresh");
+    return response.data.token;
   },
 
   /**
@@ -61,14 +49,11 @@ export const authService = {
    * Récupérer l'utilisateur courant
    */
   getCurrentUser: async (token: string): Promise<User> => {
-    const response = await apiClient.get("/auth/me", {
+    const response = await api.get<User>("/users/me", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (!response.data.success) {
-      throw new Error(response.data.error || "Failed to fetch current user");
-    }
-    return response.data.data;
+    return response.data;
   },
 };

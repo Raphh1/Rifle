@@ -105,6 +105,7 @@ const router = express.Router();
  *         description: Ticket ou destinataire introuvable
  */
 router.post("/:id/transfer", authenticate, ticketController.transferTicket);
+router.patch("/:id/cancel", authenticate, ticketController.cancelTicket);
 
 /**
  * @swagger

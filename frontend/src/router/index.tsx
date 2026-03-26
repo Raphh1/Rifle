@@ -5,6 +5,7 @@ import Register from "../pages/auth/Register";
 import { EventList } from "../pages/events/EventList";
 import { EventDetail } from "../pages/events/EventDetail";
 import { CreateEvent } from "../pages/events/CreateEvent";
+import { EditEvent } from "../pages/events/EditEvent";
 import { TicketsList } from "../pages/tickets/TicketsList";
 import { TicketValidate } from "../pages/tickets/TicketValidate";
 import { TransferTicket } from "../pages/tickets/TransferTicket";
@@ -31,7 +32,11 @@ export const router = createBrowserRouter([
       { path: "/events/:id", element: <EventDetail /> },
       {
         path: "/create-event",
-        element: <ProtectedRoute element={<CreateEvent />} requiredRole="organizer" />,
+        element: <ProtectedRoute element={<CreateEvent />} requiredRole={["organizer", "admin"]} />,
+      },
+      {
+        path: "/events/:id/edit",
+        element: <ProtectedRoute element={<EditEvent />} requiredRole={["organizer", "admin"]} />,
       },
 
       // ============ TICKETS ============
@@ -39,13 +44,13 @@ export const router = createBrowserRouter([
       { path: "/tickets/:id/transfer", element: <ProtectedRoute element={<TransferTicket />} /> },
       {
         path: "/tickets/:id/validate",
-        element: <ProtectedRoute element={<TicketValidate />} requiredRole="organizer" />,
+        element: <ProtectedRoute element={<TicketValidate />} requiredRole={["organizer", "admin"]} />,
       },
 
       // ============ SCANNER ============
       {
         path: "/scan",
-        element: <ProtectedRoute element={<Scanner />} requiredRole="organizer" />,
+        element: <ProtectedRoute element={<Scanner />} requiredRole={["organizer", "admin"]} />,
       },
 
       // ============ DASHBOARD ============

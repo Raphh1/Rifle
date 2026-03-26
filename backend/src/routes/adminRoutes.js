@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
-import { updateUserRole, getAllUsers } from "../controllers/adminController.js";
+import { updateUserRole, getAllUsers, deleteUser } from "../controllers/adminController.js";
 
 const router = express.Router();
 
@@ -52,5 +52,26 @@ router.get("/users", getAllUsers);
  *         description: Utilisateur mis à jour
  */
 router.post("/users/:id/role", updateUserRole);
+
+/**
+ * @swagger
+ * /admin/users/{id}:
+ *   delete:
+ *     summary: Supprimer un utilisateur (Admin seulement)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de l'utilisateur
+ *     responses:
+ *       200:
+ *         description: Utilisateur supprimé
+ */
+router.delete("/users/:id", deleteUser);
 
 export default router;

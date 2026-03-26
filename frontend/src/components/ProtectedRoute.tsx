@@ -1,9 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import type { User } from "../types/api";
 
 interface ProtectedRouteProps {
   element: React.ReactNode;
-  requiredRole?: "user" | "organizer" | "admin";
+  requiredRole?: User["role"] | User["role"][];
 }
 
 /**
@@ -25,7 +26,13 @@ export function ProtectedRoute({
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
+  const allowedRoles = requiredRole
+    ? Array.isArray(requiredRole)
+      ? requiredRole
+      : [requiredRole]
+    : null;
+
+  if (allowedRoles && (!user?.role || !allowedRoles.includes(user.role))) {
     return <Navigate to="/unauthorized" replace />;
   }
 

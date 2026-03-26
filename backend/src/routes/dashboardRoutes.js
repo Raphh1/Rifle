@@ -1,21 +1,19 @@
 import express from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../prisma/prismaClient.js";
+import { SOLD_TICKET_STATUSES } from "../constants/ticketStatus.js";
 
 const router = express.Router();
 
-const SOLD_STATUSES = ["paid", "used"]; // on compte "vendu" si payé ou utilisé
-
-// GET /api/dashboard/organizer
 router.get("/organizer", authenticate, authorize("organizer"), async (req, res) => {
   try {
     const organizerId = req.user.id;
 
-    // 1) Récupère les events de l'organisateur + agrégat tickets vendus
     const events = await prisma.event.findMany({
-      where: { organizerId },
+      where: {
+        organizerId,
+        deletedAt: null,
+      },
       select: {
         id: true,
         title: true,
@@ -24,7 +22,9 @@ router.get("/organizer", authenticate, authorize("organizer"), async (req, res) 
         _count: {
           select: {
             tickets: {
-              where: { status: { in: SOLD_STATUSES } },
+              where: {
+                status: { in: SOLD_TICKET_STATUSES },
+              },
             },
           },
         },
@@ -32,22 +32,22 @@ router.get("/organizer", authenticate, authorize("organizer"), async (req, res) 
       orderBy: { date: "desc" },
     });
 
-    const mappedEvents = events.map((e) => {
-      const ticketsSold = e._count.tickets;
-      const revenues = ticketsSold * e.price;
+    const mappedEvents = events.map((event) => {
+      const ticketsSold = event._count.tickets;
+      const revenues = ticketsSold * event.price;
 
       return {
-        id: e.id,
-        title: e.title,
+        id: event.id,
+        title: event.title,
         ticketsSold,
-        capacity: e.capacity,
+        capacity: event.capacity,
         revenues,
       };
     });
 
     const eventsCount = mappedEvents.length;
-    const ticketsSold = mappedEvents.reduce((sum, e) => sum + e.ticketsSold, 0);
-    const revenues = mappedEvents.reduce((sum, e) => sum + e.revenues, 0);
+    const ticketsSold = mappedEvents.reduce((sum, event) => sum + event.ticketsSold, 0);
+    const revenues = mappedEvents.reduce((sum, event) => sum + event.revenues, 0);
 
     return res.status(200).json({
       eventsCount,
@@ -57,34 +57,31 @@ router.get("/organizer", authenticate, authorize("organizer"), async (req, res) 
     });
   } catch (error) {
     console.error("Organizer dashboard error:", error);
-    return res.status(500).json({ success: false, error: "Erreur dashboard organizer" });
+    return res.status(500).json({ error: "Erreur dashboard organizer" });
   }
 });
 
-// GET /api/dashboard/admin
-router.get("/admin", authenticate, authorize("admin"), async (req, res) => {
+router.get("/admin", authenticate, authorize("admin"), async (_req, res) => {
   try {
-    const [users, events] = await Promise.all([
+    const [users, events, ticketsSold, soldTickets] = await Promise.all([
       prisma.user.count(),
-      prisma.event.count(),
+      prisma.event.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      prisma.ticket.count({
+        where: { status: { in: SOLD_TICKET_STATUSES } },
+      }),
+      prisma.ticket.findMany({
+        where: { status: { in: SOLD_TICKET_STATUSES } },
+        select: {
+          event: { select: { price: true } },
+        },
+      }),
     ]);
 
-    // tickets vendus (paid/used)
-    const ticketsSold = await prisma.ticket.count({
-      where: { status: { in: SOLD_STATUSES } },
-    });
-
-    // revenus = somme(event.price) pour chaque ticket vendu
-    // Prisma ne peut pas "sum" sur relation directe facilement sans raw,
-    // donc on récupère les tickets vendus avec le prix event (select minimal)
-    const soldTickets = await prisma.ticket.findMany({
-      where: { status: { in: SOLD_STATUSES } },
-      select: {
-        event: { select: { price: true } },
-      },
-    });
-
-    const revenues = soldTickets.reduce((sum, t) => sum + (t.event?.price ?? 0), 0);
+    const revenues = soldTickets.reduce((sum, ticket) => sum + (ticket.event?.price ?? 0), 0);
 
     return res.status(200).json({
       users,
@@ -94,7 +91,7 @@ router.get("/admin", authenticate, authorize("admin"), async (req, res) => {
     });
   } catch (error) {
     console.error("Admin dashboard error:", error);
-    return res.status(500).json({ success: false, error: "Erreur dashboard admin" });
+    return res.status(500).json({ error: "Erreur dashboard admin" });
   }
 });
 

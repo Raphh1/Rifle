@@ -7,7 +7,7 @@ const mockUseUserTickets = vi.hoisted(() => vi.fn());
 vi.mock('../../api/queries', () => ({
   useUserTickets: mockUseUserTickets,
   useTransferTicket: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
-  useBuyTicket: vi.fn(),
+  useCancelTicket: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
 }));
 
 vi.mock('react-router-dom', async () => {

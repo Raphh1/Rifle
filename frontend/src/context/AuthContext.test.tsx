@@ -5,6 +5,7 @@ import { AuthProvider } from './AuthContext';
 vi.mock('../api/axiosClient', () => ({
   api: {
     post: vi.fn(),
+    get: vi.fn().mockRejectedValue(new Error("No session")),
     defaults: {
       headers: {
         common: {},

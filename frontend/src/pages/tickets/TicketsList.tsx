@@ -1,6 +1,7 @@
-import { useUserTickets, useTransferTicket } from "../../api/queries";
 import { Link } from "react-router-dom";
 import QRCode from "react-qr-code";
+import { useCancelTicket, useTransferTicket, useUserTickets } from "../../api/queries";
+import { useAuth } from "../../context/useAuth";
 
 function formatDate(date: string | Date) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -29,32 +30,48 @@ function StatusBadge({ status }: { status: string }) {
       ? "En attente"
       : status === "used"
       ? "Utilisé"
-      : status;
+      : "Annulé";
 
   return (
     <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold backdrop-blur-md ${styles}`}>
-      {status === 'paid' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>}
-      {status === 'used' && <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>}
+      {status === "paid" && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>}
+      {status === "used" && <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>}
+      {status === "cancelled" && <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-1.5"></span>}
       {label}
     </span>
   );
 }
 
 export function TicketsList() {
+  const { user } = useAuth();
   const { data: tickets, isLoading, isError, error } = useUserTickets();
   const transferMutation = useTransferTicket();
+  const cancelTicketMutation = useCancelTicket();
 
   const handleTransfer = async (ticketId: string) => {
     const email = window.prompt("Entrez l'email du destinataire :");
     if (!email) return;
 
-    if (!confirm(`Êtes-vous sûr de vouloir transférer ce billet à ${email} ?`)) return;
+    if (!window.confirm(`Êtes-vous sûr de vouloir transférer ce billet à ${email} ?`)) return;
 
     try {
-      await transferMutation.mutateAsync({ ticketId, email });
-      alert("Billet transféré avec succès !");
+      const result = await transferMutation.mutateAsync({ ticketId, email });
+      alert(result.message);
     } catch (err) {
-      alert("Erreur lors du transfert : " + (err instanceof Error ? err.message : "Inconnue"));
+      alert(err instanceof Error ? err.message : "Erreur lors du transfert.");
+    }
+  };
+
+  const handleCancel = async (ticketId: string) => {
+    if (!window.confirm("Demander le remboursement de ce billet ? Cette action annulera votre billet et est irréversible.")) {
+      return;
+    }
+
+    try {
+      const result = await cancelTicketMutation.mutateAsync(ticketId);
+      alert(result.message || "Billet remboursé et annulé avec succès.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur lors de l'annulation et du remboursement.");
     }
   };
 
@@ -79,15 +96,11 @@ export function TicketsList() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in relative z-10">
-      
-      {/* Header */}
       <div className="mb-10 animate-slide-up">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
           Mes billets
         </h1>
-        <p className="text-base text-slate-400 mt-2 font-medium">
-          Retrouvez tous vos billets achetés et pass d'accès.
-        </p>
+        <p className="text-base text-slate-400 mt-2 font-medium">Retrouvez tous vos billets achetés et pass d&apos;accès.</p>
       </div>
 
       {!tickets || tickets.length === 0 ? (
@@ -98,7 +111,7 @@ export function TicketsList() {
             </svg>
           </div>
           <p className="text-white font-bold text-xl mb-2">Aucun billet trouvé</p>
-          <p className="text-slate-400 max-w-md mx-auto mb-8">Vous n'avez pas encore acheté de billets pour nos événements. Découvrez ce qui est prévu !</p>
+          <p className="text-slate-400 max-w-md mx-auto mb-8">Vous n&apos;avez pas encore acheté de billets. Découvrez les événements disponibles.</p>
 
           <Link
             to="/events"
@@ -109,90 +122,98 @@ export function TicketsList() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {tickets.map((ticket, i) => (
-            <div
-              key={ticket.id}
-              className="group rounded-3xl border border-slate-700/50 bg-slate-900/40 backdrop-blur-xl p-6 shadow-2xl flex flex-col transform transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-indigo-500/10 animate-slide-up"
-              style={{ animationDelay: `${(i % 10) * 50}ms` }}
-            >
-              <div className="flex justify-between items-start mb-6">
-                <StatusBadge status={ticket.status} />
-                <div className="text-xs font-mono text-slate-500 bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">
-                  #{ticket.id.slice(0, 8).toUpperCase()}
+          {tickets.map((ticket, i) => {
+            const canTransfer = ticket.status === "paid" || ticket.status === "pending";
+            const canCancel = ticket.status === "paid" || ticket.status === "pending";
+            const canValidate = (user?.role === "organizer" || user?.role === "admin") && ticket.status === "paid";
+
+            return (
+              <div
+                key={ticket.id}
+                className="group rounded-3xl border border-slate-700/50 bg-slate-900/40 backdrop-blur-xl p-6 shadow-2xl flex flex-col transform transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-indigo-500/10 animate-slide-up"
+                style={{ animationDelay: `${(i % 10) * 50}ms` }}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <StatusBadge status={ticket.status} />
+                  <div className="text-xs font-mono text-slate-500 bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">#{ticket.id.slice(0, 8).toUpperCase()}</div>
                 </div>
-              </div>
 
-              {ticket.event ? (
-                <div className="mb-6 flex-1">
-                  <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-indigo-400 transition-colors">
-                    {ticket.event.title}
-                  </h3>
+                {ticket.event ? (
+                  <div className="mb-6 flex-1">
+                    <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-indigo-400 transition-colors">
+                      {ticket.event.title}
+                    </h3>
 
-                  <div className="space-y-1">
-                    <div className="flex items-center text-sm text-slate-300">
-                      <svg className="w-4 h-4 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {formatDate(ticket.event.date)}
-                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center text-sm text-slate-300">
+                        <svg className="w-4 h-4 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {formatDate(ticket.event.date)}
+                      </div>
 
-                    <div className="flex items-center text-sm text-slate-300">
-                      <svg className="w-4 h-4 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="truncate">{ticket.event.location}</span>
+                      <div className="flex items-center text-sm text-slate-300">
+                        <svg className="w-4 h-4 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="truncate">{ticket.event.location}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="mb-6 flex-1">
-                  <h3 className="text-lg font-bold text-white mb-2 leading-tight">Événement inconnu</h3>
-                </div>
-              )}
+                ) : (
+                  <div className="mb-6 flex-1">
+                    <h3 className="text-lg font-bold text-white mb-2 leading-tight">Événement inconnu</h3>
+                  </div>
+                )}
 
-              {/* QR Container in a neat cut-out style */}
-              <div className="relative mx-auto bg-white p-4 rounded-2xl shadow-inner mb-6 transition-transform group-hover:scale-105 duration-500 w-fit">
-                <div className="absolute -left-3 top-1/2 -mt-3 w-6 h-6 bg-slate-900 rounded-full"></div>
-                <div className="absolute -right-3 top-1/2 -mt-3 w-6 h-6 bg-slate-900 rounded-full"></div>
-                <QRCode 
-                  value={ticket.qrCode || "INVALID"} 
-                  size={140}
-                  level="H"
-                  className={ticket.status === 'used' ? "opacity-30" : ""}
-                />
-                {ticket.status === 'used' && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="bg-slate-900/80 text-white font-bold px-4 py-1 rounded-full border border-slate-700/50 backdrop-blur-sm -rotate-12 shadow-lg">
-                      UTILISÉ
+                <div className="relative mx-auto bg-white p-4 rounded-2xl shadow-inner mb-6 transition-transform group-hover:scale-105 duration-500 w-fit">
+                  <div className="absolute -left-3 top-1/2 -mt-3 w-6 h-6 bg-slate-900 rounded-full"></div>
+                  <div className="absolute -right-3 top-1/2 -mt-3 w-6 h-6 bg-slate-900 rounded-full"></div>
+                  <QRCode value={ticket.qrCode || "INVALID"} size={140} level="H" className={ticket.status !== "paid" ? "opacity-30" : ""} />
+                  {ticket.status !== "paid" && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="bg-slate-900/80 text-white font-bold px-4 py-1 rounded-full border border-slate-700/50 backdrop-blur-sm -rotate-12 shadow-lg">
+                        {ticket.status === "used" ? "UTILISÉ" : ticket.status === "cancelled" ? "ANNULÉ" : "EN ATTENTE"}
+                      </div>
                     </div>
+                  )}
+                </div>
+
+                {(canTransfer || canCancel || canValidate) && (
+                  <div className={`mt-auto grid gap-3 pt-4 border-t border-slate-700/50 ${canValidate ? "grid-cols-3" : "grid-cols-2"}`}>
+                    {canValidate && (
+                      <Link
+                        to={`/tickets/${ticket.id}/validate`}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-slate-800/80 border border-slate-600/50 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 hover:border-slate-500 transition-all"
+                      >
+                        Valider
+                      </Link>
+                    )}
+
+                    {canTransfer && (
+                      <button
+                        onClick={() => handleTransfer(ticket.id)}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition-all"
+                      >
+                        Offrir
+                      </button>
+                    )}
+
+                    {canCancel && (
+                      <button
+                        onClick={() => handleCancel(ticket.id)}
+                        disabled={cancelTicketMutation.isPending}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-red-500/20 transition-all disabled:opacity-50"
+                      >
+                        Se faire rembourser
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
-
-              {/* Actions */}
-              {ticket.status === "paid" && (
-                <div className="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-slate-700/50">
-                  <Link
-                    to={`/tickets/${ticket.id}/validate`}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-800/80 border border-slate-600/50 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 hover:border-slate-500 transition-all focus:outline-none focus:ring-2 focus:ring-slate-500"
-                  >
-                    Valider
-                  </Link>
-
-                  <button
-                    onClick={() => handleTransfer(ticket.id)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
-                    Offrir
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

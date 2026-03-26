@@ -1,4 +1,4 @@
-import { useAdminUsers, useUpdateUserRole } from "../../api/queries";
+import { useAdminUsers, useUpdateUserRole, useDeleteUser } from "../../api/queries";
 import { useAuth } from "../../context/useAuth";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -17,6 +17,7 @@ export function AdminUsers() {
   const { user: currentUser } = useAuth();
   const { data: users, isLoading, isError, error } = useAdminUsers();
   const updateRole = useUpdateUserRole();
+  const deleteUser = useDeleteUser();
 
   if (isLoading) {
     return (
@@ -122,22 +123,39 @@ export function AdminUsers() {
                         {isSelf ? (
                           <span className="text-xs text-slate-600 italic">Non modifiable</span>
                         ) : (
-                          <div className="relative">
-                            <select
-                              value={u.role}
-                              disabled={isPending}
-                              onChange={(e) => updateRole.mutate({ id: u.id, role: e.target.value })}
-                              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200
-                                         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                                         disabled:opacity-50 disabled:cursor-not-allowed transition"
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <select
+                                value={u.role}
+                                disabled={isPending}
+                                onChange={(e) => updateRole.mutate({ id: u.id, role: e.target.value })}
+                                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200
+                                           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                                           disabled:opacity-50 disabled:cursor-not-allowed transition"
+                              >
+                                <option value="user">Utilisateur</option>
+                                <option value="organizer">Organisateur</option>
+                                <option value="admin">Admin</option>
+                              </select>
+                              {isPending && (
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+                              )}
+                            </div>
+                            
+                            <button
+                              onClick={() => {
+                                if (window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.")) {
+                                  deleteUser.mutate(u.id);
+                                }
+                              }}
+                              disabled={deleteUser.isPending && (deleteUser.variables as string) === u.id}
+                              className="text-red-400 hover:text-red-300 transition-colors p-2 rounded-xl hover:bg-red-400/10 disabled:opacity-50"
+                              title="Supprimer l'utilisateur"
                             >
-                              <option value="user">Utilisateur</option>
-                              <option value="organizer">Organisateur</option>
-                              <option value="admin">Admin</option>
-                            </select>
-                            {isPending && (
-                              <div className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-                            )}
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
                           </div>
                         )}
                       </td>

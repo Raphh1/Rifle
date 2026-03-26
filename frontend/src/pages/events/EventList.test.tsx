@@ -1,10 +1,11 @@
 import { render, screen } from "../../test/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EventList } from "./EventList";
-import { useEvents } from "../../api/queries";
+import { useEvents, useCategories } from "../../api/queries";
 
 vi.mock("../../api/queries", () => ({
   useEvents: vi.fn(),
+  useCategories: vi.fn(() => ({ data: [] })),
 }));
 
 vi.mock("react-router-dom", async () => {
@@ -22,6 +23,8 @@ describe("EventList", () => {
 
   it("renders loading state", () => {
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({ isLoading: true });
 
     const { container } = render(<EventList />);
@@ -56,6 +59,8 @@ describe("EventList", () => {
     ];
 
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -75,6 +80,8 @@ describe("EventList", () => {
 
   it("renders error state", () => {
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: true,
@@ -88,6 +95,8 @@ describe("EventList", () => {
 
   it("renders empty state when no events", () => {
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -118,6 +127,8 @@ describe("EventList", () => {
     ];
 
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -160,6 +171,8 @@ describe("EventList", () => {
     ];
 
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -191,6 +204,8 @@ describe("EventList", () => {
     ];
 
     const mockUseEvents = useEvents as unknown as ReturnType<typeof vi.fn>;
+    const mockUseCategories = useCategories as unknown as ReturnType<typeof vi.fn>;
+    mockUseCategories.mockReturnValue({ data: [] });
     mockUseEvents.mockReturnValue({
       isLoading: false,
       isError: false,

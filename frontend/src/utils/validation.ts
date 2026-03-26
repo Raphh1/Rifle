@@ -28,7 +28,7 @@ export const createEventSchema = z.object({
   location: z.string().min(3, "Le lieu doit contenir au moins 3 caractères"),
   price: z.coerce.number().min(0, "Le prix doit être positif"),
   capacity: z.coerce.number().min(1, "La capacité doit être au moins 1"),
-  category: z.enum(eventCategories, { errorMap: () => ({ message: "Catégorie invalide" }) }),
+  category: z.enum(eventCategories, { message: "Catégorie invalide" }),
 });
 
 export type CreateEventFormData = z.infer<typeof createEventSchema>;

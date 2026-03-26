@@ -1,28 +1,26 @@
-/**
- * API Contract Types
- * Defines all request/response types for the Rifle API
- */
-
-// ============ COMMON ============
-
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
-export interface PaginationInfo {
+export interface PaginationMeta {
+  total: number;
   page: number;
-  totalPages: number;
+  last_page: number;
 }
 
-// ============ AUTH ============
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
   role: "user" | "organizer" | "admin";
+  createdAt?: string;
 }
 
 export interface AuthData {
@@ -41,24 +39,14 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RefreshTokenResponse {
-  accessToken: string;
-}
-
-export interface PaginationMeta {
-  total: number;
-  page: number;
-  last_page: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: PaginationMeta;
-}
-
-// ============ EVENTS ============
-
-export type EventCategory = "concert" | "conference" | "festival" | "sport" | "theatre" | "exposition" | "autre";
+export type EventCategory =
+  | "concert"
+  | "conference"
+  | "festival"
+  | "sport"
+  | "theatre"
+  | "exposition"
+  | "autre";
 
 export interface CategoryOption {
   value: EventCategory;
@@ -69,17 +57,15 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  date: string; // ISO date
+  date: string;
   location: string;
   price: number;
   capacity: number;
   remaining: number;
   category: EventCategory;
-  imageUrl: string;
-  organizer?: {
-    id: string;
-    name: string;
-  };
+  imageUrl?: string | null;
+  deletedAt?: string | null;
+  organizer?: Pick<User, "id" | "name" | "email">;
 }
 
 export interface EventFilters {
@@ -99,39 +85,27 @@ export interface CreateEventRequest {
   price: number;
   capacity: number;
   category: EventCategory;
-  imageUrl: string;
+  imageUrl?: string;
 }
 
 export type UpdateEventRequest = CreateEventRequest;
 
-export interface EventListResponse {
-  data: Event[];
-  pagination: PaginationInfo;
-}
-
-// ============ TICKETS ============
-
-export type TicketStatus = "paid" | "pending" | "used";
+export type TicketStatus = "paid" | "pending" | "used" | "cancelled";
 
 export interface Ticket {
   id: string;
   userId: string;
   eventId: string;
   status: TicketStatus;
-  qrCode: string; // base64 or url
+  qrCode?: string | null;
+  purchaseDate?: string;
+  validatedAt?: string | null;
   event?: Event;
   user?: User;
-  validatedAt?: string;
 }
 
 export interface TicketValidateRequest {
   qrCode: string;
-}
-
-export interface CheckoutResponse {
-  checkoutUrl: string;
-  ticket?: Ticket; // Pour le mode simulation
-  message?: string;
 }
 
 export interface ValidateTicketResponse {
@@ -139,14 +113,14 @@ export interface ValidateTicketResponse {
   ticket: Ticket;
 }
 
-
-// ============ ADMIN ============
+export interface CancelTicketResponse {
+  message: string;
+  ticket: Ticket;
+}
 
 export interface AdminUser extends User {
   createdAt: string;
 }
-
-// ============ DASHBOARD ============
 
 export interface EventDashboardData {
   id: string;

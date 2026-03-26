@@ -146,7 +146,7 @@ router.get("/:id", getEventById);
  *       401:
  *         description: Non autorisé
  */
-router.post("/", authenticate, upload.single("image"), createEvent);
+router.post("/", authenticate, authorize("organizer", "admin"), upload.single("image"), createEvent);
 
 /**
  * @swagger
@@ -173,7 +173,7 @@ router.post("/", authenticate, upload.single("image"), createEvent);
  *       404:
  *         description: Événement introuvable
  */
-router.put("/:id", authenticate, updateEvent);
+router.put("/:id", authenticate, upload.single("image"), updateEvent);
 
 /**
  * @swagger

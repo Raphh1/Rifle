@@ -47,3 +47,24 @@ export const getAllUsers = async (req, res) => {
         res.status(500).json({ error: "Erreur serveur" });
     }
 };
+
+/**
+ * Supprime un utilisateur (ADMIN only)
+ */
+export const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Utilisateur supprimé" });
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'P2025') {
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};

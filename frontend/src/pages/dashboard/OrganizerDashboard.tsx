@@ -1,4 +1,5 @@
-import { useOrganizerDashboard } from "../../api/queries";
+import { Link } from "react-router-dom";
+import { useDeleteEvent, useOrganizerDashboard } from "../../api/queries";
 
 function formatMoneyEUR(v: number) {
   if (Number.isNaN(v)) return "0,00€";
@@ -12,6 +13,7 @@ function clampPct(p: number) {
 
 export function OrganizerDashboard() {
   const { data: dashboard, isLoading, isError, error } = useOrganizerDashboard();
+  const deleteEventMutation = useDeleteEvent();
 
   if (isLoading) {
     return (
@@ -33,6 +35,19 @@ export function OrganizerDashboard() {
       </div>
     );
   }
+
+  const handleDelete = async (eventId: string) => {
+    if (!window.confirm("Supprimer cet événement ? Les billets actifs seront automatiquement annulés.")) {
+      return;
+    }
+
+    try {
+      const result = await deleteEventMutation.mutateAsync(eventId);
+      alert(result.message);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Impossible de supprimer cet événement.");
+    }
+  };
 
   return (
     <div className="max-w-7xl animate-fade-in">
@@ -115,6 +130,7 @@ export function OrganizerDashboard() {
                   <th className="px-6 py-4">Capacité</th>
                   <th className="px-6 py-4">Revenus</th>
                   <th className="px-6 py-4 whitespace-nowrap">Remplissage</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
 
@@ -151,6 +167,24 @@ export function OrganizerDashboard() {
                         </div>
                         <div className="mt-1.5 text-xs text-slate-500 font-medium">
                           {event.ticketsSold} / {event.capacity} vendus
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex flex-wrap gap-2">
+                          <Link
+                            to={`/events/${event.id}/edit`}
+                            className="rounded-xl border border-slate-600/50 bg-slate-800/50 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700 transition"
+                          >
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(event.id)}
+                            disabled={deleteEventMutation.isPending}
+                            className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 transition disabled:opacity-50"
+                          >
+                            Supprimer
+                          </button>
                         </div>
                       </td>
                     </tr>

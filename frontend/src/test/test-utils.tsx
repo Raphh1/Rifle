@@ -3,7 +3,7 @@ import React, { type ReactElement } from "react";
 import { render as rtlRender, type RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContextValue";
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -17,7 +17,19 @@ function AllTheProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthContext.Provider
+          value={{
+            user: null,
+            isLoading: false,
+            isAuthenticated: false,
+            error: null,
+            login: async () => {},
+            register: async () => {},
+            logout: () => {},
+          }}
+        >
+          {children}
+        </AuthContext.Provider>
       </BrowserRouter>
     </QueryClientProvider>
   );
