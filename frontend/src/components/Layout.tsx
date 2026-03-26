@@ -71,9 +71,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <>
-                  <span className="text-sm font-semibold text-slate-300 truncate max-w-[180px]">
-                    {user.name}
-                  </span>
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-slate-800 transition focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-900"
+                  >
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="h-7 w-7 rounded-full object-cover ring-2 ring-indigo-500/40"
+                      />
+                    ) : (
+                      <div className="h-7 w-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white ring-2 ring-indigo-500/40">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-sm font-semibold text-slate-300 truncate max-w-[140px]">
+                      {user.name}
+                    </span>
+                  </Link>
 
                   <button
                     onClick={handleLogout}
@@ -167,8 +183,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </>
                   )}
 
-                  <div className="pt-3 border-t border-slate-200">
-                    <div className="text-sm font-semibold text-slate-300 mb-2">{user.name}</div>
+                  <div className="pt-3 border-t border-slate-700">
+                    <Link
+                      to="/profile"
+                      onClick={closeMobile}
+                      className="flex items-center gap-2 rounded-xl px-3 py-2 mb-2 hover:bg-slate-800 transition"
+                    >
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="h-7 w-7 rounded-full object-cover ring-2 ring-indigo-500/40"
+                        />
+                      ) : (
+                        <div className="h-7 w-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-sm font-semibold text-slate-300">{user.name}</span>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-100

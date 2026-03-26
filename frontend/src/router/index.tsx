@@ -12,6 +12,7 @@ import { TransferTicket } from "../pages/tickets/TransferTicket";
 import { Scanner } from "../pages/tickets/Scanner";
 import { Unauthorized } from "../pages/Unauthorized";
 import { AdminUsers } from "../pages/admin/AdminUsers";
+import { ProfilePage } from "../pages/profile/ProfilePage";
 
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { LayoutWrapper, NotFoundPage, RoleBasedDashboard } from "./RouteElements";
@@ -58,6 +59,9 @@ export const router = createBrowserRouter([
         path: "/dashboard",
         element: <ProtectedRoute element={<RoleBasedDashboard />} />,
       },
+
+      // ============ PROFILE ============
+      { path: "/profile", element: <ProtectedRoute element={<ProfilePage />} /> },
 
       // ============ ADMIN ============
       {

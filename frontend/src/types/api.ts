@@ -143,3 +143,9 @@ export interface AdminDashboard {
   ticketsSold: number;
   revenues: number;
 }
+
+export interface UpdatePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword?: string; 
+}
