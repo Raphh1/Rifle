@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,9 +35,23 @@ function MessageBubble({
       className={`mb-2 max-w-[80%] ${isOwn ? "self-end" : "self-start"}`}
     >
       {!isOwn && (
-        <Text className="text-indigo-400 text-xs font-medium mb-0.5 ml-1">
-          {message.sender.name}
-        </Text>
+        <View className="flex-row items-center gap-2 mb-1 ml-1">
+          <View className="w-6 h-6 rounded-full bg-indigo-600 items-center justify-center overflow-hidden">
+            {message.sender.avatar ? (
+              <Image
+                source={{ uri: message.sender.avatar }}
+                className="w-6 h-6 rounded-full"
+              />
+            ) : (
+              <Text className="text-white text-[10px] font-bold">
+                {message.sender.name.charAt(0).toUpperCase()}
+              </Text>
+            )}
+          </View>
+          <Text className="text-slate-300 text-xs font-medium">
+            {message.sender.name}
+          </Text>
+        </View>
       )}
       {message.parent && (
         <View className="bg-dark-700/50 rounded-lg px-2 py-1 mb-1">
@@ -51,10 +66,10 @@ function MessageBubble({
         }`}
       >
         <Text className={isOwn ? "text-white" : "text-dark-200"}>
-          {message.deletedAt ? "Message supprime" : message.content}
+          {message.deletedAt ? "Message supprimé" : message.content}
         </Text>
       </View>
-      <Text className="text-dark-600 text-[10px] mt-0.5 mx-1">{time}</Text>
+      <Text className={`text-[10px] mt-0.5 mx-1 text-dark-500 ${isOwn ? "text-right" : "text-left"}`}>{time}</Text>
     </View>
   );
 }
