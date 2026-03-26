@@ -8,9 +8,11 @@ import type {
   OrganizerDashboard,
   AdminDashboard,
   AdminUser,
+  User,
   CreateEventRequest,
   TicketValidateRequest,
   ValidateTicketResponse,
+  UpdatePasswordRequest,
 } from "../types/api";
 import { api } from "./axiosClient";
 
@@ -195,6 +197,37 @@ export const useUpdateUserRole = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+};
+
+// ============ PROFILE ============
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await api.put<User>("/users/me", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useUpdatePassword = () => {
+  return useMutation({
+    mutationFn: async (data: UpdatePasswordRequest) => {
+      const response = await api.put<{ message: string }>("/users/me/password", data);
+      return response.data;
+    },
+  });
+};
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await api.delete<{ message: string }>("/users/me");
+      return response.data;
     },
   });
 };

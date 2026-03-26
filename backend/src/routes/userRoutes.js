@@ -7,7 +7,14 @@
 
 import express from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
-import { getProfile, getAllUsers } from "../controllers/userController.js";
+import upload from "../middleware/upload.js";
+import {
+  getProfile,
+  updateProfile,
+  updatePassword,
+  deleteAccount,
+  getAllUsers,
+} from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -19,6 +26,33 @@ const router = express.Router();
  *     tags: [Users]
  */
 router.get("/me", authenticate, getProfile);
+
+/**
+ * @swagger
+ * /users/me:
+ *   put:
+ *     summary: Met à jour le profil (nom, email, avatar)
+ *     tags: [Users]
+ */
+router.put("/me", authenticate, upload.single("avatar"), updateProfile);
+
+/**
+ * @swagger
+ * /users/me/password:
+ *   put:
+ *     summary: Change le mot de passe
+ *     tags: [Users]
+ */
+router.put("/me/password", authenticate, updatePassword);
+
+/**
+ * @swagger
+ * /users/me:
+ *   delete:
+ *     summary: Supprime le compte de l'utilisateur connecté
+ *     tags: [Users]
+ */
+router.delete("/me", authenticate, deleteAccount);
 
 /**
  * @swagger

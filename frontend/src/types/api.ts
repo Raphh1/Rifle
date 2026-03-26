@@ -23,6 +23,18 @@ export interface User {
   email: string;
   name: string;
   role: "user" | "organizer" | "admin";
+  avatar?: string;
+  emailVerified?: boolean;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  email?: string;
+}
+
+export interface UpdatePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface AuthData {

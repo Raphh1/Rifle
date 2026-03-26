@@ -61,6 +61,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     delete api.defaults.headers.common["Authorization"];
   };
 
+  const refreshUser: AuthContextType["refreshUser"] = async () => {
+    try {
+      const response = await api.get<User>("/users/me");
+      setUser(response.data);
+    } catch {
+      // token expiré ou invalide
+      logout();
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        refreshUser,
       }}
     >
       {children}
