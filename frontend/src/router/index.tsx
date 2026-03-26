@@ -14,6 +14,13 @@ import { Unauthorized } from "../pages/Unauthorized";
 import { AdminUsers } from "../pages/admin/AdminUsers";
 import { ProfilePage } from "../pages/profile/ProfilePage";
 
+// Social pages
+import { FavoritesPage } from "../pages/social/FavoritesPage";
+import { FriendsPage } from "../pages/social/FriendsPage";
+import { RoomsPage } from "../pages/social/RoomsPage";
+import { ChatRoom } from "../pages/social/ChatRoom";
+import { NotificationsPage } from "../pages/social/NotificationsPage";
+
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { LayoutWrapper, NotFoundPage, RoleBasedDashboard } from "./RouteElements";
 
@@ -62,6 +69,13 @@ export const router = createBrowserRouter([
 
       // ============ PROFILE ============
       { path: "/profile", element: <ProtectedRoute element={<ProfilePage />} /> },
+
+      // ============ SOCIAL ============
+      { path: "/favorites", element: <ProtectedRoute element={<FavoritesPage />} /> },
+      { path: "/friends", element: <ProtectedRoute element={<FriendsPage />} /> },
+      { path: "/rooms", element: <ProtectedRoute element={<RoomsPage />} /> },
+      { path: "/rooms/:roomId", element: <ProtectedRoute element={<ChatRoom />} /> },
+      { path: "/notifications", element: <ProtectedRoute element={<NotificationsPage />} /> },
 
       // ============ ADMIN ============
       {
