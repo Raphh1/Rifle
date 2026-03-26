@@ -34,6 +34,39 @@ enum TicketStatus {
   cancelled
 }
 
+enum FriendshipStatus {
+  pending
+  accepted
+  declined
+}
+
+enum RoomVisibility {
+  public
+  private
+}
+
+enum RoomRole {
+  member
+  moderator
+  admin
+}
+
+enum NotificationType {
+  friend_request
+  friend_accepted
+  room_invite
+  new_message
+  event_reminder
+  review_received
+}
+
+enum ReportReason {
+  spam
+  harassment
+  inappropriate
+  other
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
@@ -45,9 +78,23 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Relations
+  // Relations existantes
   events  Event[]
   tickets Ticket[]
+
+  // Social
+  favorites           Favorite[]
+  reviews             Review[]
+  friendshipsSent     Friendship[]   @relation("FriendshipSent")
+  friendshipsReceived Friendship[]   @relation("FriendshipReceived")
+  createdRooms        Room[]         @relation("RoomCreator")
+  roomMemberships     RoomMember[]
+  messages            Message[]
+  reactions           Reaction[]
+  notifications       Notification[]
+  reports             Report[]
+  blocksSent          Block[]        @relation("BlocksSent")
+  blocksReceived      Block[]        @relation("BlocksReceived")
 
   @@map("users")
 }
@@ -65,10 +112,15 @@ model Event {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  // Relations
+  // Relations existantes
   organizerId String
   organizer   User     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   tickets     Ticket[]
+
+  // Social
+  favorites Favorite[]
+  reviews   Review[]
+  rooms     Room[]
 
   @@index([date])
   @@index([location])
@@ -97,4 +149,181 @@ model Ticket {
   @@index([eventId])
   @@index([status])
   @@map("tickets")
+}
+
+// ============ FAVORIS ============
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@map("favorites")
+}
+
+// ============ AVIS & NOTES ============
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  rating    Int // 1-5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@map("reviews")
+}
+
+// ============ SYSTEME D'AMIS ============
+
+model Friendship {
+  id         String           @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     FriendshipStatus @default(pending)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  sender   User @relation("FriendshipSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendshipReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("friendships")
+}
+
+// ============ ROOMS ============
+
+model Room {
+  id         String         @id @default(uuid())
+  name       String
+  eventId    String
+  creatorId  String
+  visibility RoomVisibility @default(public)
+  inviteCode String?        @unique @default(uuid())
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  event    Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  creator  User         @relation("RoomCreator", fields: [creatorId], references: [id])
+  members  RoomMember[]
+  messages Message[]
+
+  @@index([eventId])
+  @@index([creatorId])
+  @@map("rooms")
+}
+
+model RoomMember {
+  id       String   @id @default(uuid())
+  roomId   String
+  userId   String
+  role     RoomRole @default(member)
+  joinedAt DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@index([userId])
+  @@map("room_members")
+}
+
+// ============ MESSAGES ============
+
+model Message {
+  id        String    @id @default(uuid())
+  roomId    String
+  senderId  String
+  content   String    @db.Text
+  parentId  String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  room      Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User       @relation(fields: [senderId], references: [id])
+  parent    Message?   @relation("MessageReplies", fields: [parentId], references: [id])
+  replies   Message[]  @relation("MessageReplies")
+  reactions Reaction[]
+
+  @@index([roomId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model Reaction {
+  id        String @id @default(uuid())
+  messageId String
+  userId    String
+  emoji     String
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@map("reactions")
+}
+
+// ============ NOTIFICATIONS ============
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  data      Json?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
+  @@map("notifications")
+}
+
+// ============ MODERATION ============
+
+model Report {
+  id         String       @id @default(uuid())
+  reporterId String
+  targetType String // "message", "user", "review"
+  targetId   String
+  reason     ReportReason
+  details    String?
+  resolved   Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([resolved])
+  @@map("reports")
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("BlocksSent", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlocksReceived", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
 }

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import type { EventCategory } from "../../types/api";
+import { useAuth } from "../../context/useAuth";
+import { useFavoriteStatus, useToggleFavorite } from "../../api/socialQueries";
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
   concert: "Concert",
@@ -40,11 +42,22 @@ function formatDate(d: string | Date) {
 }
 
 export function EventCard({ event }: { event: EventCardModel }) {
+  const { user } = useAuth();
+  const eventId = String(event.id);
+  const { data: favStatus } = useFavoriteStatus(user ? eventId : "");
+  const toggleFav = useToggleFavorite();
+
   const capacity = event.capacity ?? 0;
   const remaining = event.remaining ?? 0;
-
   const occupied = capacity > 0 ? Math.max(0, capacity - remaining) : 0;
   const pct = capacity > 0 ? Math.max(0, Math.min(100, Math.round((occupied / capacity) * 100))) : 0;
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    toggleFav.mutate({ eventId, isFavorited: favStatus?.isFavorited ?? false });
+  };
 
   return (
     <Link
@@ -76,6 +89,28 @@ export function EventCard({ event }: { event: EventCardModel }) {
             </div>
           )}
         </div>
+
+        {/* Favorite button */}
+        {user && (
+          <button
+            onClick={handleFavorite}
+            className="absolute left-3 top-3 p-2 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition group/fav"
+          >
+            <svg
+              className={`w-5 h-5 transition ${
+                favStatus?.isFavorited
+                  ? "text-red-500 fill-red-500"
+                  : "text-white/70 group-hover/fav:text-red-400"
+              }`}
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              fill={favStatus?.isFavorited ? "currentColor" : "none"}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        )}
 
         {/* Title + date */}
         <div className="absolute left-4 bottom-4 right-4 text-white">
