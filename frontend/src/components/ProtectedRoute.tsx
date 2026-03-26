@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import type { User } from "../types/api";
+import { LoadingScreen } from "./LoadingScreen";
 
 interface ProtectedRouteProps {
   element: React.ReactNode;
@@ -19,7 +20,7 @@ export function ProtectedRoute({
   const { isAuthenticated, user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {
@@ -46,7 +47,7 @@ export function PublicRoute({ element }: { element: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <LoadingScreen />;
   }
 
   if (isAuthenticated) {
