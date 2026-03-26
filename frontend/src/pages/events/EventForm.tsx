@@ -106,7 +106,11 @@ export function EventForm({
       const payload = new FormData();
 
       Object.entries(validatedData).forEach(([key, value]) => {
-        payload.append(key, String(value));
+        if (key === "date" && value) {
+          payload.append(key, new Date(String(value)).toISOString());
+        } else {
+          payload.append(key, String(value));
+        }
       });
 
       if (initialValues?.imageUrl) {
