@@ -63,7 +63,16 @@ router.get("/organizer", authenticate, authorize("organizer"), async (req, res) 
 
 router.get("/admin", authenticate, authorize("admin"), async (_req, res) => {
   try {
-    const [users, events, ticketsSold, soldTickets] = await Promise.all([
+    const [
+      users,
+      events,
+      ticketsSold,
+      soldTickets,
+      usersByRole,
+      ticketsByStatus,
+      cancelledTickets,
+      topEvents,
+    ] = await Promise.all([
       prisma.user.count(),
       prisma.event.count({
         where: {
@@ -79,15 +88,70 @@ router.get("/admin", authenticate, authorize("admin"), async (_req, res) => {
           event: { select: { price: true } },
         },
       }),
+      prisma.user.groupBy({
+        by: ["role"],
+        _count: { role: true },
+      }),
+      prisma.ticket.groupBy({
+        by: ["status"],
+        _count: { status: true },
+      }),
+      prisma.ticket.count({
+        where: { status: "cancelled" },
+      }),
+      prisma.event.findMany({
+        where: { deletedAt: null },
+        select: {
+          id: true,
+          title: true,
+          capacity: true,
+          price: true,
+          date: true,
+          _count: {
+            select: {
+              tickets: {
+                where: { status: { in: SOLD_TICKET_STATUSES } },
+              },
+            },
+          },
+        },
+        orderBy: {
+          tickets: { _count: "desc" },
+        },
+        take: 5,
+      }),
     ]);
 
     const revenues = soldTickets.reduce((sum, ticket) => sum + (ticket.event?.price ?? 0), 0);
+
+    const rolesMap = {};
+    for (const row of usersByRole) {
+      rolesMap[row.role] = row._count.role;
+    }
+
+    const statusMap = {};
+    for (const row of ticketsByStatus) {
+      statusMap[row.status] = row._count.status;
+    }
+
+    const mappedTopEvents = topEvents.map((e) => ({
+      id: e.id,
+      title: e.title,
+      capacity: e.capacity,
+      ticketsSold: e._count.tickets,
+      revenues: e._count.tickets * e.price,
+      date: e.date,
+    }));
 
     return res.status(200).json({
       users,
       events,
       ticketsSold,
       revenues,
+      cancelledTickets,
+      usersByRole: rolesMap,
+      ticketsByStatus: statusMap,
+      topEvents: mappedTopEvents,
     });
   } catch (error) {
     console.error("Admin dashboard error:", error);
