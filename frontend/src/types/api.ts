@@ -137,11 +137,24 @@ export interface OrganizerDashboard {
   events: EventDashboardData[];
 }
 
+export interface AdminTopEvent {
+  id: string;
+  title: string;
+  capacity: number;
+  ticketsSold: number;
+  revenues: number;
+  date: string;
+}
+
 export interface AdminDashboard {
   users: number;
   events: number;
   ticketsSold: number;
   revenues: number;
+  cancelledTickets: number;
+  usersByRole: Record<string, number>;
+  ticketsByStatus: Record<string, number>;
+  topEvents: AdminTopEvent[];
 }
 
 export interface UpdatePasswordRequest {
