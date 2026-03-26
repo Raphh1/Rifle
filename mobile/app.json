@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Rifle",
+    "slug": "rifle",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "rifle",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rifle.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Rifle a besoin de la caméra pour scanner les QR codes des billets."
+      }
+    },
+    "android": {
+      "package": "com.rifle.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Rifle a besoin de la caméra pour scanner les QR codes des billets."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Rifle a besoin d'accéder à vos photos pour votre avatar et les images d'événements."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#6366f1"
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ]
+  }
+}
