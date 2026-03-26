@@ -4,6 +4,7 @@ import {
   CANCELLABLE_TICKET_STATUSES,
   SOLD_TICKET_STATUSES,
 } from "../constants/ticketStatus.js";
+import { sendTicketEmail } from "../services/mailService.js";
 
 export const getMyTickets = async (req, res) => {
   try {
@@ -94,6 +95,16 @@ export const buyTicket = async (req, res) => {
       message: `Billet acheté avec succès pour ${result.eventTitle}`,
       ticket: result.ticket,
     });
+
+    // Fire-and-forget : envoi du billet par mail sans bloquer la réponse
+    (async () => {
+      try {
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        if (user) await sendTicketEmail(user, result.ticket);
+      } catch (err) {
+        console.error('[mailService] Failed to send ticket email:', err);
+      }
+    })();
   } catch (err) {
     console.error(err);
     if (err.message === "SOLD_OUT") {

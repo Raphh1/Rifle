@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import prisma from "../prisma/prismaClient.js";
 import { JWT_SECRET } from "../middleware/auth.js";
+import { sendWelcomeEmail } from "../services/mailService.js";
 
 // 👉 Register
 export const register = async (req, res) => {
@@ -19,6 +20,10 @@ export const register = async (req, res) => {
     const user = await prisma.user.create({
       data: { email, password: hashed, name },
     });
+
+    sendWelcomeEmail(user).catch((err) =>
+      console.error('[mailService] Failed to send welcome email:', err)
+    );
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
