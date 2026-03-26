@@ -1,146 +1,112 @@
-# Rifle - Event Management Platform
+# Rifle — Plateforme de gestion d'événements
 
-Plateforme web "Full-Stack" de gestion d'événements et de billetterie, réalisée dans le cadre du projet final.
+Application full-stack de gestion d'événements et de billetterie (web + mobile).
 
-## 🎯 Objectifs & Fonctionnalités
-
-Cette application permet aux utilisateurs de s'inscrire, gérer des événements et acheter des billets.
-
-### Fonctionnalités Principales
-- **Authentification & Sécurité** : Inscription, Connexion (JWT), Hachage de mot de passe, Protection des routes.
-- **Gestion des Événements** (CRUD) : Création, modification, suppression et affichage d'événements.
-- **Billetterie** : Achat de billets, validation (QR Code simulé/logique), et historique.
-- **Tableaux de Bord** : Vues spécifiques pour les Organisateurs et Administrateurs.
-
-## 🛠️ Stack Technique
-
-### Backend
-- **Framework** : Node.js + Express
-- **Base de Données** : PostgreSQL via Prisma ORM
-- **Documentation API** : Swagger (`/api-docs`)
-- **Tests** : Jest + Supertest (Setup)
-
-### Frontend
-- **Framework** : React 19 + TypeScript (Vite)
-- **Routing** : React Router
-- **State Management** : React Query + Context API
-- **UI** : Chakra UI + CSS Modules
-- **Tests** : Vitest + React Testing Library
-
-### DevOps
-- **CI/CD** : GitHub Actions (Tests automatisés à chaque push)
-- **Déploiement** : Vercel (Frontend & Backend Serverless)
-
-## 🚀 Installation et Lancement
-
-### Prérequis
-- **Docker & Docker Compose** (recommandé) OU Node.js v18+ + PostgreSQL 15
+**Stack :** Node.js / Express / Prisma / PostgreSQL · React 19 / TypeScript · Expo (React Native)
 
 ---
 
-### Option A — Docker Compose (recommandé)
+## Lancement avec Docker (recommandé)
 
-Lance le backend + la base de données + Adminer en une seule commande.
+> Prérequis : Docker et Docker Compose installés.
 
 ```bash
-# Depuis la racine du projet
+# 1. Copier et configurer les variables d'environnement
+cp backend/.env.example backend/.env
+
+# 2. Lancer tous les services (backend + frontend + base de données)
 docker-compose up --build
 ```
 
-| Service   | URL                          | Description              |
-|-----------|------------------------------|--------------------------|
-| Backend   | http://localhost:3000/api    | API REST                 |
-| Swagger   | http://localhost:3000/api-docs | Documentation API      |
-| Adminer   | http://localhost:8080        | Interface base de données |
-
-> **Note** : Le frontend n'est pas inclus dans Docker Compose. Lance-le séparément (voir ci-dessous).
-
-Pour lancer le frontend en parallèle :
+| Service   | URL                              |
+|-----------|----------------------------------|
+| Frontend  | http://localhost:5173            |
+| API       | http://localhost:3000/api        |
+| Swagger   | http://localhost:3000/api-docs   |
+| Adminer   | http://localhost:8080            |
 
 ```bash
-cd frontend
-npm install
-npm run dev
-```
-
-> Frontend : http://localhost:5173
-
-Pour arrêter les conteneurs :
-
-```bash
+# Arrêter les conteneurs
 docker-compose down
-# Pour supprimer aussi les données (volume PostgreSQL) :
+
+# Supprimer aussi les données (reset complet)
 docker-compose down -v
 ```
 
 ---
 
-### Option B — Développement local (sans Docker)
+## Lancement sans Docker
 
-Prérequis : Node.js v18+ et PostgreSQL 15 installés localement.
+> Prérequis : Node.js v18+ et PostgreSQL 15 installés.
 
-#### 1. Backend
+### Backend
 
 ```bash
 cd backend
-npm install
-
-# Configurer l'environnement
 cp .env.example .env
-# Éditer .env : remplacer DATABASE_URL par postgresql://USER:PASSWORD@localhost:5432/rifle_db?schema=public
+# Modifier DATABASE_URL dans .env avec vos identifiants PostgreSQL
 
-# Appliquer les migrations Prisma
-npm run migrate
-
-# Lancer le serveur
-npm run dev
+npm install
+npm run migrate   # Applique les migrations Prisma
+npm run dev       # Lance le serveur sur http://localhost:3000
 ```
 
-> API : `http://localhost:3000` — Swagger : `http://localhost:3000/api-docs`
-
-#### 2. Frontend (nouveau terminal)
+### Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev       # Lance sur http://localhost:5173
 ```
-
-> Application : `http://localhost:5173`
 
 ---
 
-## ✅ Qualité et Tests
+## Application mobile (Expo)
 
-Le projet inclut des tests unitaires et d'intégration.
+> Prérequis : Node.js, Expo CLI (`npm install -g expo-cli`), et l'app **Expo Go** sur le téléphone.
 
-### Lancer les tests Frontend
 ```bash
-cd frontend
-npm test
+cd mobile
+npm install
 ```
 
-### Lancer les tests Backend
+Modifier `mobile/.env` pour pointer vers l'API backend :
+
+```env
+EXPO_PUBLIC_API_URL=http://<votre-ip-locale>:3000/api
+```
+
+```bash
+npm start   # Scanner le QR code avec Expo Go
+```
+
+---
+
+## Données de test (seed)
+
+Pour peupler la base avec des données de démonstration :
+
 ```bash
 cd backend
-npm test
+npm run seed
 ```
 
-### CI/CD Pipeline
-Un workflow GitHub Actions (`.github/workflows/ci.yml`) est configuré pour :
-1. Installer les dépendances
-2. Linter le code
-3. Exécuter les tests unitaires (Frontend & Backend)
-4. Vérifier la compilation
+Comptes créés :
+
+| Rôle        | Email                  | Mot de passe  |
+|-------------|------------------------|---------------|
+| Admin       | admin@rifle.com        | password123   |
+| Organisateur| organizer@rifle.com    | password123   |
+| Utilisateur | user@rifle.com         | password123   |
 
 ---
 
-## 🌍 Déploiement
+## Tests
 
-Le projet est configuré pour être déployé sur **Vercel**.
+```bash
+# Frontend
+cd frontend && npm test
 
-**URL de Production** : `https://votre-projet-rifle.vercel.app` (À remplacer après déploiement)
-
-Architecture de déploiement :
-- **Frontend** : Hébergé comme site statique (SPA).
-- **Backend** : Hébergé comme Serverless Function (`api/index.js`).
+# Backend
+cd backend && npm test
+```

@@ -188,7 +188,16 @@ export function ChatRoom() {
                 <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[70%] ${isMe ? "order-2" : ""}`}>
                     {!isMe && (
-                      <p className="text-xs text-slate-400 mb-1 ml-1">{msg.sender.name}</p>
+                      <div className="flex items-center gap-2 mb-1 ml-1">
+                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
+                          {msg.sender.avatar ? (
+                            <img src={msg.sender.avatar} alt={msg.sender.name} className="h-6 w-6 rounded-full object-cover" />
+                          ) : (
+                            msg.sender.name.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-300 font-medium">{msg.sender.name}</p>
+                      </div>
                     )}
                     {msg.parent && (
                       <div className="text-xs bg-slate-700/50 rounded-lg px-3 py-1.5 mb-1 border-l-2 border-indigo-500 text-slate-400">
@@ -203,10 +212,10 @@ export function ChatRoom() {
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                      <p className={`text-xs mt-1 ${isMe ? "text-indigo-200" : "text-slate-500"}`}>
-                        {new Date(msg.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-                      </p>
                     </div>
+                    <p className={`text-[11px] mt-1 ${isMe ? "text-right mr-1 text-slate-500" : "ml-1 text-slate-500"}`}>
+                      {new Date(msg.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
                     {/* Reactions */}
                     {msg.reactions.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
