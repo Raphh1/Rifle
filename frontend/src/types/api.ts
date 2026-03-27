@@ -160,5 +160,5 @@ export interface AdminDashboard {
 export interface UpdatePasswordRequest {
   currentPassword: string;
   newPassword: string;
-  confirmPassword?: string; 
+  confirmPassword?: string;
 }

@@ -112,6 +112,36 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+// PUT /messages/:messageId
+export const editMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { content } = req.body;
+
+    if (!content?.trim()) return res.status(400).json({ error: "Contenu requis" });
+
+    const message = await prisma.message.findUnique({ where: { id: messageId } });
+    if (!message) return res.status(404).json({ error: "Message introuvable" });
+    if (message.senderId !== req.user.id) return res.status(403).json({ error: "Non autorisé" });
+    if (message.deletedAt) return res.status(400).json({ error: "Message supprimé" });
+
+    const updated = await prisma.message.update({
+      where: { id: messageId },
+      data: { content: content.trim() },
+      include: {
+        sender: { select: { id: true, name: true, avatar: true } },
+        parent: { select: { id: true, content: true, sender: { select: { id: true, name: true } } } },
+        reactions: { include: { user: { select: { id: true, name: true } } } },
+      },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 // DELETE /messages/:messageId
 export const deleteMessage = async (req, res) => {
   try {

@@ -48,6 +48,10 @@ export const getEventRooms = async (req, res) => {
       },
       include: {
         creator: { select: { id: true, name: true, avatar: true } },
+        members: {
+          where: { userId: req.user?.id },
+          select: { role: true },
+        },
         _count: { select: { members: true, messages: true } },
         messages: {
           take: 1,
@@ -63,6 +67,8 @@ export const getEventRooms = async (req, res) => {
       membersCount: room._count.members,
       messagesCount: room._count.messages,
       lastMessage: room.messages[0] || null,
+      myRole: room.members[0]?.role ?? null,
+      members: undefined,
       messages: undefined,
       _count: undefined,
     }));
@@ -318,9 +324,23 @@ export const getMyRooms = async (req, res) => {
       orderBy: { joinedAt: "desc" },
     });
 
-    const data = memberships.map((m) => ({
+    const unreadCounts = await Promise.all(
+      memberships.map((m) =>
+        prisma.message.count({
+          where: {
+            roomId: m.roomId,
+            createdAt: { gt: m.lastReadAt ?? m.joinedAt },
+            deletedAt: null,
+            senderId: { not: req.user.id },
+          },
+        })
+      )
+    );
+
+    const data = memberships.map((m, i) => ({
       ...m.room,
       myRole: m.role,
+      unreadCount: unreadCounts[i],
       membersCount: m.room._count.members,
       messagesCount: m.room._count.messages,
       lastMessage: m.room.messages[0] || null,
