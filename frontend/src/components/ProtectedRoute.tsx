@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import type { User } from "../types/api";
 import { LoadingScreen } from "./LoadingScreen";
@@ -18,13 +18,14 @@ export function ProtectedRoute({
   requiredRole,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   const allowedRoles = requiredRole

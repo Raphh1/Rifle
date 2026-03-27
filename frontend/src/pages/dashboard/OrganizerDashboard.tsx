@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useDeleteEvent, useOrganizerDashboard } from "../../api/queries";
+import { useToast } from "../../context/ToastContext";
 
 function formatMoneyEUR(v: number) {
   if (Number.isNaN(v)) return "0,00€";
@@ -14,6 +15,7 @@ function clampPct(p: number) {
 export function OrganizerDashboard() {
   const { data: dashboard, isLoading, isError, error } = useOrganizerDashboard();
   const deleteEventMutation = useDeleteEvent();
+  const toast = useToast();
 
   if (isLoading) {
     return (
@@ -43,9 +45,9 @@ export function OrganizerDashboard() {
 
     try {
       const result = await deleteEventMutation.mutateAsync(eventId);
-      alert(result.message);
+      toast.success(result.message);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Impossible de supprimer cet événement.");
+      toast.error(err instanceof Error ? err.message : "Impossible de supprimer cet événement.");
     }
   };
 

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import { useTicketDetail, useValidateTicket } from "../../api/queries";
+import { useToast } from "../../context/ToastContext";
 
 function formatDate(date: string | Date) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -43,6 +44,7 @@ export function TicketValidate() {
 
   const { data: ticket, isLoading, isError, error } = useTicketDetail(id!);
   const validateMutation = useValidateTicket();
+  const toast = useToast();
 
   const canValidate = useMemo(() => {
     return ticket?.status === "paid" && !!ticket?.qrCode;
@@ -69,7 +71,7 @@ export function TicketValidate() {
 
   const handleValidate = async () => {
     if (!ticket.qrCode) {
-      alert("QR code manquant pour ce billet.");
+      toast.error("QR code manquant pour ce billet.");
       return;
     }
 
@@ -78,7 +80,7 @@ export function TicketValidate() {
       navigate("/tickets");
     } catch (err) {
       console.error("Erreur lors de la validation:", err);
-      alert("Erreur lors de la validation du billet.");
+      toast.error("Erreur lors de la validation du billet.");
     }
   };
 

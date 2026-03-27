@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { loginSchema, type LoginFormData } from "../../utils/validation";
 import { ZodError } from "zod";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoading, error: authError } = useAuth();
+  const from = (location.state as { from?: string } | null)?.from || "/dashboard";
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -30,7 +32,7 @@ export default function Login() {
     try {
       const validatedData = loginSchema.parse(formData);
       await login(validatedData.email, validatedData.password);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
