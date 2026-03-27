@@ -52,6 +52,8 @@ export function EventCard({ event }: { event: EventCardModel }) {
   const occupied = capacity > 0 ? Math.max(0, capacity - remaining) : 0;
   const pct = capacity > 0 ? Math.max(0, Math.min(100, Math.round((occupied / capacity) * 100))) : 0;
 
+  const isUrgent = capacity > 0 && remaining > 0 && remaining / capacity <= 0.2;
+
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -83,6 +85,11 @@ export function EventCard({ event }: { event: EventCardModel }) {
           <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-gradient-to-r from-indigo-600 to-blue-500 text-xs font-semibold text-white shadow-lg">
             <span className="whitespace-nowrap">{event.price}€</span>
           </div>
+          {isUrgent && (
+            <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 bg-gradient-to-r from-red-600 to-orange-500 text-xs font-semibold text-white shadow-lg animate-pulse">
+              Plus que {remaining} place{remaining > 1 ? "s" : ""} !
+            </div>
+          )}
           {event.category && event.category !== "autre" && (
             <div className={`inline-flex items-center rounded-full px-2.5 py-1 bg-gradient-to-r ${CATEGORY_COLORS[event.category]} text-xs font-semibold text-white shadow-lg`}>
               {CATEGORY_LABELS[event.category]}

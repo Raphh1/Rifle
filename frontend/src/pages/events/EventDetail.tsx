@@ -37,6 +37,7 @@ export function EventDetail() {
 
   // Local state
   const [tab, setTab] = useState<"info" | "reviews" | "rooms">("info");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
@@ -71,9 +72,10 @@ export function EventDetail() {
   const handleBuyTicket = async () => {
     try {
       const result = await buyTicketMutation.mutateAsync(event.id);
-      alert(result.message);
-      navigate("/tickets");
+      setShowConfirmModal(false);
+      navigate(`/tickets/${result.ticket.id}/success`);
     } catch (err) {
+      setShowConfirmModal(false);
       alert(err instanceof Error ? err.message : "Impossible d'acheter ce billet.");
     }
   };
@@ -133,7 +135,7 @@ export function EventDetail() {
   const isPast = new Date(event.date) < new Date();
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl animate-fade-in relative z-10">
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl animate-fade-in relative z-10 pb-24 lg:pb-8">
       <button
         onClick={() => navigate("/events")}
         className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-indigo-400 transition-colors group"
@@ -358,14 +360,14 @@ export function EventDetail() {
 
                   <div className="mt-8">
                     <button
-                      onClick={handleBuyTicket}
-                      disabled={remaining === 0 || buyTicketMutation.isPending}
+                      onClick={() => setShowConfirmModal(true)}
+                      disabled={remaining === 0}
                       className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-blue-500 transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                     >
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                       </svg>
-                      {buyTicketMutation.isPending ? "Traitement en cours..." : remaining === 0 ? "Complet" : "Réserver ma place"}
+                      {remaining === 0 ? "Complet" : "Réserver ma place"}
                     </button>
                     <p className="text-center text-xs text-slate-500 mt-3">Paiement simulé. Le billet est disponible immédiatement dans ton espace.</p>
                   </div>
@@ -608,6 +610,134 @@ export function EventDetail() {
           )}
         </div>
       </div>
+      {/* CTA sticky bottom mobile */}
+      {!isPast && remaining > 0 && (
+        <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 p-4 safe-area-pb">
+          <div className="flex items-center justify-between gap-4 max-w-5xl mx-auto">
+            <div className="min-w-0">
+              <p className="text-white font-semibold truncate">{event.title}</p>
+              <p className="text-sm text-slate-400">{event.price === 0 ? "Gratuit" : `${event.price}€`} — {remaining} place{remaining > 1 ? "s" : ""}</p>
+            </div>
+            <button
+              onClick={() => setShowConfirmModal(true)}
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-blue-500 transition"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+              </svg>
+              Réserver
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal confirmation achat */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => !buyTicketMutation.isPending && setShowConfirmModal(false)} />
+          <div className="relative w-full max-w-md rounded-3xl border border-slate-700/50 bg-slate-900 shadow-2xl animate-slide-up overflow-hidden">
+            {/* Header image */}
+            <div className="relative h-36 bg-slate-800">
+              {event.imageUrl ? (
+                <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-500">
+                  <svg className="w-10 h-10 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                disabled={buyTicketMutation.isPending}
+                className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition text-white/70 hover:text-white disabled:opacity-50"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div>
+                <h3 className="text-xl font-bold text-white">{event.title}</h3>
+                <p className="text-sm text-slate-400 mt-1">
+                  {new Date(event.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                </p>
+              </div>
+
+              {/* Récap */}
+              <div className="space-y-3 rounded-2xl bg-slate-800/50 border border-slate-700/40 p-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Lieu
+                  </span>
+                  <span className="text-white font-medium">{event.location}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Heure
+                  </span>
+                  <span className="text-white font-medium">
+                    {new Date(event.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                    </svg>
+                    Billet × 1
+                  </span>
+                  <span className="text-white font-medium">{remaining} places restantes</span>
+                </div>
+
+                <div className="border-t border-slate-700/50 pt-3 mt-3 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-slate-300">Total</span>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">
+                    {event.price === 0 ? "Gratuit" : `${event.price}€`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={buyTicketMutation.isPending}
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700/50 text-sm font-semibold text-slate-300 hover:bg-slate-700 transition disabled:opacity-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleBuyTicket}
+                  disabled={buyTicketMutation.isPending}
+                  className="flex-1 inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-blue-500 transition disabled:opacity-50"
+                >
+                  {buyTicketMutation.isPending ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Traitement...
+                    </>
+                  ) : (
+                    "Confirmer l'achat"
+                  )}
+                </button>
+              </div>
+
+              <p className="text-center text-xs text-slate-500">Paiement simulé. Le billet est disponible immédiatement.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

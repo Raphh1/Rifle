@@ -9,6 +9,7 @@ import { EditEvent } from "../pages/events/EditEvent";
 import { TicketsList } from "../pages/tickets/TicketsList";
 import { TicketValidate } from "../pages/tickets/TicketValidate";
 import { TransferTicket } from "../pages/tickets/TransferTicket";
+import { TicketSuccess } from "../pages/tickets/TicketSuccess";
 import { Scanner } from "../pages/tickets/Scanner";
 import { Unauthorized } from "../pages/Unauthorized";
 import { AdminUsers } from "../pages/admin/AdminUsers";
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
 
       // ============ TICKETS ============
       { path: "/tickets", element: <ProtectedRoute element={<TicketsList />} /> },
+      { path: "/tickets/:id/success", element: <ProtectedRoute element={<TicketSuccess />} /> },
       { path: "/tickets/:id/transfer", element: <ProtectedRoute element={<TransferTicket />} /> },
       {
         path: "/tickets/:id/validate",

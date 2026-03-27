@@ -3,6 +3,21 @@
 > Ce fichier est lu automatiquement par Claude Code au démarrage de chaque conversation.
 > Il sert de base de connaissance partagée entre tous les développeurs du projet.
 
+## Instructions pour Claude
+
+Avant d'écrire du code :
+1. Vérifie dans la roadmap ci-dessous si la tâche demandée correspond à un item existant
+2. Vérifie que la tâche est dans le domaine du dev qui la demande (voir répartition équipe)
+3. Analyse le problème et propose l'approche avant de coder
+4. Quand c'est terminé, coche l'item dans la roadmap si applicable
+
+Règles :
+- Toujours lire les fichiers concernés avant de les modifier
+- Respecter les conventions de code listées ci-dessous
+- Ne pas toucher aux fichiers de l'autre dev sans le signaler
+- Proposer des PR courtes et ciblées, pas des refactors massifs
+- **Refactoring continu** : à chaque développement, refactoriser le code touché (simplifier, supprimer le code mort, extraire les duplications, améliorer le nommage). Le refactoring doit rester dans le périmètre des fichiers modifiés — ne pas partir en refactor global non demandé.
+
 ## Projet
 
 Rifle est une plateforme de billetterie événementielle full-stack en français.
