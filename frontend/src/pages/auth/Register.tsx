@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { registerSchema, type RegisterFormData } from "../../utils/validation";
 import { ZodError } from "zod";
 
 export default function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register, isLoading, error: authError } = useAuth();
+  const from = (location.state as { from?: string } | null)?.from || "/dashboard";
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
@@ -31,7 +33,7 @@ export default function Register() {
     try {
       const validatedData = registerSchema.parse(formData);
       await register(validatedData.name, validatedData.email, validatedData.password);
-      navigate("/dashboard");
+      navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useBuyTicket, useDeleteEvent, useEventDetail } from "../../api/queries";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../context/ToastContext";
 import {
   useFavoriteStatus,
   useToggleFavorite,
@@ -21,6 +22,7 @@ export function EventDetail() {
   const { data: event, isLoading, isError, error } = useEventDetail(id || "");
   const buyTicketMutation = useBuyTicket();
   const deleteEventMutation = useDeleteEvent();
+  const toast = useToast();
 
   // Social hooks
   const { data: favStatus } = useFavoriteStatus(user ? id! : "");
@@ -76,7 +78,7 @@ export function EventDetail() {
       navigate(`/tickets/${result.ticket.id}/success`);
     } catch (err) {
       setShowConfirmModal(false);
-      alert(err instanceof Error ? err.message : "Impossible d'acheter ce billet.");
+      toast.error(err instanceof Error ? err.message : "Impossible d'acheter ce billet.");
     }
   };
 
@@ -87,10 +89,10 @@ export function EventDetail() {
 
     try {
       const result = await deleteEventMutation.mutateAsync(event.id);
-      alert(result.message || "Événement supprimé. Les billets ont été remboursés.");
+      toast.success(result.message || "Événement supprimé. Les billets ont été remboursés.");
       navigate("/dashboard");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Impossible de supprimer cet événement.");
+      toast.error(err instanceof Error ? err.message : "Impossible de supprimer cet événement.");
     }
   };
 
@@ -108,8 +110,7 @@ export function EventDetail() {
       setShowReviewForm(false);
       setReviewComment("");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Erreur";
-      alert(message);
+      toast.error(err instanceof Error ? err.message : "Erreur");
     }
   };
 
@@ -123,8 +124,7 @@ export function EventDetail() {
       setShowRoomForm(false);
       setRoomName("");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Erreur";
-      alert(message);
+      toast.error(err instanceof Error ? err.message : "Erreur");
     }
   };
 

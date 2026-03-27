@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
@@ -22,11 +22,13 @@ import { RoomsPage } from "../pages/social/RoomsPage";
 import { ChatRoom } from "../pages/social/ChatRoom";
 import { NotificationsPage } from "../pages/social/NotificationsPage";
 
+import { Landing } from "../pages/Landing";
 import { ProtectedRoute, PublicRoute } from "../components/ProtectedRoute";
 import { LayoutWrapper, NotFoundPage, RoleBasedDashboard } from "./RouteElements";
 
 export const router = createBrowserRouter([
   // ============ PUBLIC ROUTES (NO LAYOUT) ============
+  { path: "/", element: <Landing /> },
   { path: "/login", element: <PublicRoute element={<Login />} /> },
   { path: "/register", element: <PublicRoute element={<Register />} /> },
 
@@ -86,7 +88,6 @@ export const router = createBrowserRouter([
       },
 
       // ============ FALLBACK ============
-      { path: "/", element: <Navigate to="/events" replace /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import QRCode from "react-qr-code";
 import { useCancelTicket, useTransferTicket, useUserTickets } from "../../api/queries";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../context/ToastContext";
 
 function formatDate(date: string | Date) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -47,6 +48,7 @@ export function TicketsList() {
   const { data: tickets, isLoading, isError, error } = useUserTickets();
   const transferMutation = useTransferTicket();
   const cancelTicketMutation = useCancelTicket();
+  const toast = useToast();
 
   const handleTransfer = async (ticketId: string) => {
     const email = window.prompt("Entrez l'email du destinataire :");
@@ -56,9 +58,9 @@ export function TicketsList() {
 
     try {
       const result = await transferMutation.mutateAsync({ ticketId, email });
-      alert(result.message);
+      toast.success(result.message);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erreur lors du transfert.");
+      toast.error(err instanceof Error ? err.message : "Erreur lors du transfert.");
     }
   };
 
@@ -69,9 +71,9 @@ export function TicketsList() {
 
     try {
       const result = await cancelTicketMutation.mutateAsync(ticketId);
-      alert(result.message || "Billet remboursé et annulé avec succès.");
+      toast.success(result.message || "Billet remboursé et annulé avec succès.");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erreur lors de l'annulation et du remboursement.");
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'annulation et du remboursement.");
     }
   };
 
