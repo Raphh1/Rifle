@@ -299,7 +299,8 @@ export const useJoinRoom = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (roomId: string) => {
-      await api.post(`/rooms/${roomId}/join`);
+      const res = await api.post(`/rooms/${roomId}/join`);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
@@ -382,6 +383,15 @@ export const useSendMessage = () => {
   return useMutation({
     mutationFn: async ({ roomId, content, parentId }: { roomId: string; content: string; parentId?: string }) => {
       const res = await api.post<Message>(`/rooms/${roomId}/messages`, { content, parentId });
+      return res.data;
+    },
+  });
+};
+
+export const useEditMessage = () => {
+  return useMutation({
+    mutationFn: async ({ messageId, content }: { messageId: string; content: string }) => {
+      const res = await api.put<Message>(`/messages/${messageId}`, { content });
       return res.data;
     },
   });

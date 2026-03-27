@@ -585,20 +585,22 @@ export function EventDetail() {
                         )}
                       </div>
                       <div className="flex gap-2 ml-4">
-                        <Link
-                          to={`/rooms/${room.id}`}
-                          className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 transition"
-                        >
-                          Ouvrir
-                        </Link>
-                        {room.visibility === "public" && (
-                          <button
-                            onClick={() => joinRoom.mutate(room.id)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-sm font-medium hover:bg-slate-600 transition"
+                        {room.myRole ? (
+                          <Link
+                            to={`/rooms/${room.id}`}
+                            className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 transition"
                           >
-                            Rejoindre
+                            Ouvrir
+                          </Link>
+                        ) : room.visibility === "public" ? (
+                          <button
+                            onClick={() => joinRoom.mutate(room.id, { onSuccess: () => navigate(`/rooms/${room.id}`) })}
+                            disabled={joinRoom.isPending}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition disabled:opacity-50"
+                          >
+                            {joinRoom.isPending ? "..." : "Rejoindre"}
                           </button>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   ))

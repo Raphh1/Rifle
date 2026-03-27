@@ -93,6 +93,7 @@ export interface Room {
   event?: { id: string; title: string };
   membersCount: number;
   messagesCount: number;
+  unreadCount?: number;
   lastMessage: RoomLastMessage | null;
   myRole?: RoomRole;
 }

@@ -33,20 +33,29 @@ export function setupWebSocket(httpServer) {
 
     // ===== ROOM EVENTS =====
 
-    socket.on("room:join", async (roomId) => {
+    socket.on("room:join", async (roomId, callback) => {
       try {
         const member = await prisma.roomMember.findUnique({
           where: { roomId_userId: { roomId, userId } },
         });
-        if (!member) return;
+        if (!member) {
+          if (typeof callback === "function") callback({ error: "Not a member" });
+          return;
+        }
 
         socket.join(`room:${roomId}`);
-        socket.to(`room:${roomId}`).emit("room:user_joined", {
-          userId,
-          roomId,
-        });
+        socket.to(`room:${roomId}`).emit("room:user_joined", { userId, roomId });
+
+        if (typeof callback === "function") callback({ success: true });
+
+        // Mark all messages as read (non-blocking)
+        prisma.roomMember.update({
+          where: { roomId_userId: { roomId, userId } },
+          data: { lastReadAt: new Date() },
+        }).catch((err) => console.error("lastReadAt update error", err));
       } catch (err) {
         console.error("room:join error", err);
+        if (typeof callback === "function") callback({ error: "Server error" });
       }
     });
 
