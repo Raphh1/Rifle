@@ -16,6 +16,7 @@ Règles :
 - Respecter les conventions de code listées ci-dessous
 - Ne pas toucher aux fichiers de l'autre dev sans le signaler
 - Proposer des PR courtes et ciblées, pas des refactors massifs
+- Mets à jour ce fichier en fonction de ce qui est fait a chaque fois
 - **Refactoring continu** : à chaque développement, refactoriser le code touché (simplifier, supprimer le code mort, extraire les duplications, améliorer le nommage). Le refactoring doit rester dans le périmètre des fichiers modifiés — ne pas partir en refactor global non demandé.
 
 ## Projet
@@ -96,9 +97,9 @@ Ces fichiers sont touchés par les deux devs — **un seul le modifie par sprint
 ### Répartition Phase 1
 
 **Dev A (Cesar) — Flow transactionnel :**
-- [ ] Modal confirmation achat + page post-achat
-- [ ] "Plus que X places !" sur EventCard
-- [ ] CTA "Acheter" sticky bottom mobile
+- [x] Modal confirmation achat + page post-achat (`/tickets/:id/success`)
+- [x] "Plus que X places !" sur EventCard (badge rouge < 20% capacité)
+- [x] CTA "Acheter" sticky bottom mobile (visible < lg)
 
 **Dev B (Raphael) — Infrastructure UX :**
 - [ ] Système de toasts (composant partagé + remplacer les `alert()`)
@@ -153,11 +154,11 @@ Rifle/
 ## Roadmap produit (priorisée)
 
 ### Phase 1 — Fondations (frictions critiques)
-- [ ] Modal confirmation achat + page post-achat "Merci" (QR + actions)
+- [x] Modal confirmation achat + page post-achat "Merci" (QR + actions)
 - [ ] Système de toasts (remplacer tous les alert() natifs)
 - [ ] Redirect post-login vers la page d'origine
-- [ ] "Plus que X places !" sur events < 20% capacité restante
-- [ ] CTA "Acheter" sticky bottom mobile sur EventDetail
+- [x] "Plus que X places !" sur events < 20% capacité restante
+- [x] CTA "Acheter" sticky bottom mobile sur EventDetail
 
 ### Phase 2 — Activation (visiteurs → utilisateurs)
 - [ ] Landing page avec events populaires + social proof
@@ -190,13 +191,13 @@ Rifle/
 ## Frictions UX connues (à corriger)
 
 ### 🔴 Critiques
-1. Achat billet en 1 clic sans confirmation ni récap prix
-2. Pas de page post-achat (aucun feedback, pas de QR affiché)
-3. `alert()` natifs partout (achat, annulation, transfert, suppression)
+1. ~~Achat billet en 1 clic sans confirmation ni récap prix~~ ✅ Modale de confirmation avec récap
+2. ~~Pas de page post-achat (aucun feedback, pas de QR affiché)~~ ✅ Page `/tickets/:id/success` avec QR
+3. `alert()` natifs partout (achat, annulation, transfert, suppression) — achat corrigé, reste les autres
 4. Pas de landing page (visiteur tombe sur /events sans contexte)
 5. Pas d'onboarding post-inscription
 6. Redirect post-login ne ramène pas sur la page d'origine
-7. CTA achat pas assez visible sur EventDetail
+7. ~~CTA achat pas assez visible sur EventDetail~~ ✅ CTA sticky bottom mobile + badge urgence
 
 ### 🟠 Importants
 8. Transfert billet par email uniquement (pas de sélection d'amis)
