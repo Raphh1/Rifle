@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { EventCategory } from "../../types/api";
 import { useAuth } from "../../context/useAuth";
+import { useFriendsGoing } from "../../api/queries";
 import { useFavoriteStatus, useToggleFavorite } from "../../api/socialQueries";
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
@@ -46,6 +47,7 @@ export function EventCard({ event }: { event: EventCardModel }) {
   const eventId = String(event.id);
   const { data: favStatus } = useFavoriteStatus(user ? eventId : "");
   const toggleFav = useToggleFavorite();
+  const { data: friendsGoing } = useFriendsGoing(user ? eventId : "");
 
   const capacity = event.capacity ?? 0;
   const remaining = event.remaining ?? 0;
@@ -147,6 +149,31 @@ export function EventCard({ event }: { event: EventCardModel }) {
             <div className="text-sm font-semibold text-white">{remaining}</div>
           </div>
         </div>
+
+        {/* Friends going */}
+        {friendsGoing && friendsGoing.length > 0 && (
+          <div className="mt-3 flex items-center gap-1.5">
+            <div className="flex -space-x-1.5">
+              {friendsGoing.slice(0, 3).map((friend) => (
+                <div
+                  key={friend.id}
+                  className="h-5 w-5 rounded-full bg-indigo-500 border-2 border-slate-900 flex items-center justify-center text-[9px] font-bold text-white overflow-hidden"
+                >
+                  {friend.avatar ? (
+                    <img src={friend.avatar} alt={friend.name} className="h-full w-full object-cover" />
+                  ) : (
+                    friend.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+              ))}
+            </div>
+            <span className="text-xs text-indigo-400 font-medium">
+              {friendsGoing.length === 1
+                ? `${friendsGoing[0].name} y va`
+                : `${friendsGoing.length} amis y vont`}
+            </span>
+          </div>
+        )}
 
         {/* Progress */}
         <div className="mt-4" aria-hidden>

@@ -3,6 +3,7 @@ import QRCode from "react-qr-code";
 import { useCancelTicket, useTransferTicket, useUserTickets } from "../../api/queries";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../context/ToastContext";
+import { downloadICS } from "../../utils/calendar";
 
 function formatDate(date: string | Date) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -181,6 +182,18 @@ export function TicketsList() {
                     </div>
                   )}
                 </div>
+
+                {ticket.event && (ticket.status === "paid" || ticket.status === "pending") && (
+                  <button
+                    onClick={() => downloadICS({ title: ticket.event!.title, date: ticket.event!.date, location: ticket.event!.location, description: ticket.event!.description })}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-800/60 border border-slate-700/40 px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition mb-4"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Ajouter au calendrier
+                  </button>
+                )}
 
                 {(canTransfer || canCancel || canValidate) && (
                   <div className={`mt-auto grid gap-3 pt-4 border-t border-slate-700/50 ${canValidate ? "grid-cols-3" : "grid-cols-2"}`}>

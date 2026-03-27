@@ -63,6 +63,18 @@ export const useEventDetail = (eventId: string) =>
     enabled: !!eventId,
   });
 
+export const useFriendsGoing = (eventId: string) =>
+  useQuery({
+    queryKey: ["events", eventId, "friends-going"],
+    queryFn: async () => {
+      const response = await api.get<{ id: string; name: string; avatar?: string | null }[]>(
+        `/events/${eventId}/friends-going`
+      );
+      return response.data;
+    },
+    enabled: !!eventId,
+  });
+
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();
 

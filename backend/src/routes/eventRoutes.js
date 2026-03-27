@@ -50,6 +50,7 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
+  getFriendsGoing,
 } from "../controllers/eventController.js";
 
 const router = express.Router();
@@ -124,6 +125,7 @@ router.get("/categories", getCategories);
  *       404:
  *         description: Événement introuvable
  */
+router.get("/:id/friends-going", authenticate, getFriendsGoing);
 router.get("/:id", getEventById);
 
 /**

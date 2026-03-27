@@ -163,9 +163,9 @@ Rifle/
 ### Phase 2 — Activation (visiteurs → utilisateurs)
 - [ ] Landing page avec events populaires + social proof
 - [ ] Onboarding post-inscription (profil, catégories, découverte)
-- [ ] "X amis y vont" sur les EventCards
-- [ ] Suggestion de rooms après achat de billet
-- [ ] Bouton "Ajouter au calendrier" (ICS) sur les tickets
+- [x] "X amis y vont" sur les EventCards (endpoint `GET /events/:id/friends-going` + avatars sur EventCard)
+- [x] Suggestion de rooms après achat de billet (section rooms sur TicketSuccess)
+- [x] Bouton "Ajouter au calendrier" (ICS) sur les tickets (TicketSuccess + TicketsList)
 
 ### Phase 3 — Rétention
 - [ ] Notifications de rappel event (J-7, J-1)

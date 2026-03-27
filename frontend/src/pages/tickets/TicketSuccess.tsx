@@ -1,10 +1,15 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTicketDetail } from "../../api/queries";
+import { useEventRooms, useJoinRoom } from "../../api/socialQueries";
+import { downloadICS } from "../../utils/calendar";
 
 export function TicketSuccess() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: ticket, isLoading, isError } = useTicketDetail(id || "");
+  const eventId = ticket?.eventId || "";
+  const { data: rooms } = useEventRooms(eventId);
+  const joinRoom = useJoinRoom();
 
   if (isLoading) {
     return (
@@ -110,6 +115,48 @@ export function TicketSuccess() {
             )}
           </div>
 
+          {/* Suggestion de rooms */}
+          {rooms && rooms.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Rejoins une room</h3>
+              <div className="space-y-2">
+                {rooms.slice(0, 3).map((room) => (
+                  <div key={room.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-slate-700/40">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-white truncate">{room.name}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                          room.visibility === "public"
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : "bg-amber-500/20 text-amber-400"
+                        }`}>
+                          {room.visibility === "public" ? "Public" : "Privé"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">{room.membersCount} membres</p>
+                    </div>
+                    <div className="flex gap-2 ml-3">
+                      {room.visibility === "public" && (
+                        <button
+                          onClick={() => joinRoom.mutate(room.id)}
+                          className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-500 transition"
+                        >
+                          Rejoindre
+                        </button>
+                      )}
+                      <Link
+                        to={`/rooms/${room.id}`}
+                        className="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-xs font-medium hover:bg-slate-600 transition"
+                      >
+                        Ouvrir
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="space-y-3">
             <Link
@@ -121,6 +168,17 @@ export function TicketSuccess() {
               </svg>
               Voir mes billets
             </Link>
+            {event && (
+              <button
+                onClick={() => downloadICS({ title: event.title, date: event.date, location: event.location, description: event.description })}
+                className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-slate-800 border border-slate-700/50 px-6 py-3.5 text-sm font-semibold text-slate-300 hover:bg-slate-700 transition"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Ajouter au calendrier
+              </button>
+            )}
             {event && (
               <Link
                 to={`/events/${event.id}`}

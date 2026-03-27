@@ -1,5 +1,5 @@
 import prisma from "../prisma/prismaClient.js";
-import { CANCELLABLE_TICKET_STATUSES } from "../constants/ticketStatus.js";
+import { ACTIVE_TICKET_STATUSES, CANCELLABLE_TICKET_STATUSES } from "../constants/ticketStatus.js";
 import { publicEventInclude, eventWithRemaining } from "../utils/eventPayload.js";
 
 const CATEGORY_OPTIONS = [
@@ -259,6 +259,46 @@ export const deleteEvent = async (req, res) => {
       message: "Événement supprimé. Les billets actifs ont été annulés et remboursés.",
       cancelledTickets,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+// GET /events/:eventId/friends-going
+export const getFriendsGoing = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        status: "accepted",
+        OR: [
+          { senderId: req.user.id },
+          { receiverId: req.user.id },
+        ],
+      },
+    });
+
+    const friendIds = friendships.map((f) =>
+      f.senderId === req.user.id ? f.receiverId : f.senderId
+    );
+
+    if (friendIds.length === 0) return res.json([]);
+
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        eventId,
+        userId: { in: friendIds },
+        status: { in: ACTIVE_TICKET_STATUSES },
+      },
+      include: {
+        user: { select: { id: true, name: true, avatar: true } },
+      },
+      distinct: ["userId"],
+    });
+
+    res.json(tickets.map((t) => t.user));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erreur serveur" });
